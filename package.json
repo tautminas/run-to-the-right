@@ -1,0 +1,30 @@
+{
+  "name": "phaser3-rollup-typescript",
+  "version": "1.1.0",
+  "description": "Phaser 3 TypeScript Starter",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/geocine/phaser3-rollup-typescript.git"
+  },
+  "author": "Aivan Monceller",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/geocine/phaser3-rollup-typescript/issues"
+  },
+  "homepage": "https://github.com/geocine/phaser3-rollup-typescript#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.31",
+    "@rollup/plugin-alias": "^3.1.9",
+    "@rollup/plugin-commonjs": "^22.0.0",
+    "@rollup/plugin-replace": "^4.0.0",
+    "phaser": "^3.55.2",
+    "typescript": "^4.6.4",
+    "vite": "^2.9.13"
+  }
+}

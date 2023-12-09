@@ -9,6 +9,7 @@ export default class Demo extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private bombs!: Phaser.Physics.Arcade.Group;
   private gameOver: boolean = false;
+  private mainPlatform!: Phaser.Physics.Arcade.Image;
 
   constructor() {
     super("GameScene");
@@ -33,10 +34,13 @@ export default class Demo extends Phaser.Scene {
 
     // The platforms
     this.platforms = this.physics.add.staticGroup();
-    this.platforms.create(400, 568, "ground").setScale(2).refreshBody();
+    this.mainPlatform = this.platforms
+      .create(400, 568, "ground")
+      .setScale(2)
+      .refreshBody();
     this.platforms.create(600, 400, "ground");
-    this.platforms.create(50, 250, "ground");
-    this.platforms.create(750, 220, "ground");
+    // this.platforms.create(50, 250, "ground");
+    // this.platforms.create(750, 220, "ground");
 
     // The player
     this.player = this.physics.add.sprite(100, 450, "dude");
@@ -61,6 +65,15 @@ export default class Demo extends Phaser.Scene {
     });
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
+    this.physics.world.setBounds(
+      0,
+      0,
+      Number.POSITIVE_INFINITY,
+      this.cameras.main.height
+    );
+
+    // Set camera to follow the player
+    // this.cameras.main.startFollow(this.player, true, 0.1, null);
 
     // Adding physics
     this.physics.add.collider(this.player, this.platforms);
@@ -120,6 +133,30 @@ export default class Demo extends Phaser.Scene {
 
   update() {
     if (!this.player || !this.cursors) return;
+
+    // Move camera to the right
+    const centerX = this.cameras.main.width / 2;
+    const playerX = this.player.x;
+    if (playerX > this.cameras.main.scrollX + centerX) {
+      // Camera
+      this.cameras.main.scrollX = playerX - centerX;
+      // Platform
+      this.mainPlatform.x = this.cameras.main.scrollX + centerX;
+      this.mainPlatform.body.updateFromGameObject();
+      this.platforms.children.iterate((child) => {
+        if (child !== this.mainPlatform) {
+          child.body.updateFromGameObject();
+        }
+      });
+      // Score text
+      this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
+    }
+
+    // Disallow player to move beyond left edge
+    const leftEdge = this.cameras.main.scrollX;
+    if (playerX < leftEdge) {
+      this.player.x = leftEdge;
+    }
 
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-160);

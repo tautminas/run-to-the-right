@@ -150,6 +150,8 @@ export default class Demo extends Phaser.Scene {
       });
       // Score text
       this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
+      this.score = Math.round(this.cameras.main.scrollX / 10);
+      this.scoreText.setText("Score: " + this.score);
     }
 
     // Disallow player to move beyond left edge
@@ -180,7 +182,7 @@ export default class Demo extends Phaser.Scene {
   ) {
     star.disableBody(true, true);
 
-    this.score += 10;
+    // this.score += 10;
     this.scoreText.setText("Score: " + this.score);
 
     if (this.stars.countActive(true) === 0) {

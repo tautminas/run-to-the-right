@@ -10,6 +10,7 @@ export default class Demo extends Phaser.Scene {
   private bombs!: Phaser.Physics.Arcade.Group;
   private gameOver: boolean = false;
   private mainPlatform!: Phaser.Physics.Arcade.Image;
+  private backgroundImage!: Phaser.GameObjects.Image;
 
   constructor() {
     super("GameScene");
@@ -22,15 +23,31 @@ export default class Demo extends Phaser.Scene {
     this.load.image("ground", "assets/platform.png");
     this.load.image("star", "assets/star.png");
     this.load.image("bomb", "assets/bomb.png");
-    this.load.spritesheet("dude", "assets/dude.png", {
-      frameWidth: 32,
+    this.load.spritesheet("main-idle", "assets/main-idle.png", {
+      frameWidth: 48,
+      frameHeight: 48,
+    });
+    this.load.spritesheet("main-run-right", "assets/main-run-right.png", {
+      frameWidth: 48,
+      frameHeight: 48,
+    });
+    this.load.spritesheet("main-run-left", "assets/main-run-left.png", {
+      frameWidth: 48,
       frameHeight: 48,
     });
   }
 
   create() {
+    // Remove the boundaries from the right side
+    this.physics.world.setBounds(
+      0,
+      0,
+      Number.POSITIVE_INFINITY,
+      this.physics.world.bounds.height
+    );
+
     // World building
-    this.add.image(400, 300, "sky");
+    this.backgroundImage = this.add.image(400, 300, "sky");
 
     // The platforms
     this.platforms = this.physics.add.staticGroup();
@@ -38,39 +55,46 @@ export default class Demo extends Phaser.Scene {
       .create(400, 568, "ground")
       .setScale(2)
       .refreshBody();
-    this.platforms.create(400, 300, "ground");
+    // this.platforms.create(400, 300, "ground");
     // this.platforms.create(50, 250, "ground");
     // this.platforms.create(750, 220, "ground");
 
     // The player
-    this.player = this.physics.add.sprite(100, 450, "dude");
+    this.player = this.physics.add.sprite(100, 450, "main-idle");
+    this.player.setBodySize(24, 36);
+    this.player.setOffset(5, 12);
+    this.player.setScale(1.7);
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.anims.create({
-      key: "left",
-      frames: this.anims.generateFrameNumbers("dude", { start: 0, end: 3 }),
+      key: "idle",
+      frames: this.anims.generateFrameNumbers("main-idle", {
+        start: 0,
+        end: 3,
+      }),
       frameRate: 10,
       repeat: -1,
     });
+
     this.anims.create({
-      key: "turn",
-      frames: [{ key: "dude", frame: 4 }],
-      frameRate: 20,
-    });
-    this.anims.create({
-      key: "right",
-      frames: this.anims.generateFrameNumbers("dude", { start: 5, end: 8 }),
+      key: "run-right",
+      frames: this.anims.generateFrameNumbers("main-run-right", {
+        start: 0,
+        end: 5,
+      }),
       frameRate: 10,
       repeat: -1,
     });
-    this.player.setBounce(0.2);
-    this.player.setCollideWorldBounds(true);
-    this.physics.world.setBounds(
-      0,
-      0,
-      Number.POSITIVE_INFINITY,
-      this.cameras.main.height
-    );
+
+    this.anims.create({
+      key: "run-left",
+      frames: this.anims.generateFrameNumbers("main-run-left", {
+        start: 5,
+        end: 0,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
 
     // Set camera to follow the player
     // this.cameras.main.startFollow(this.player, true, 0.1, null);
@@ -86,32 +110,32 @@ export default class Demo extends Phaser.Scene {
     }
 
     // Collecting stars
-    this.stars = this.physics.add.group({
-      key: "star",
-      repeat: 11,
-      setXY: { x: 12, y: 0, stepX: 70 },
-    });
-    this.stars.children.iterate((child: Phaser.GameObjects.GameObject) => {
-      if (
-        child instanceof Phaser.Physics.Arcade.Sprite &&
-        child.body instanceof Phaser.Physics.Arcade.Body
-      ) {
-        child.body.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-      }
-      return true;
-    });
+    // this.stars = this.physics.add.group({
+    //   key: "star",
+    //   repeat: 11,
+    //   setXY: { x: 12, y: 0, stepX: 70 },
+    // });
+    // this.stars.children.iterate((child: Phaser.GameObjects.GameObject) => {
+    //   if (
+    //     child instanceof Phaser.Physics.Arcade.Sprite &&
+    //     child.body instanceof Phaser.Physics.Arcade.Body
+    //   ) {
+    //     child.body.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
+    //   }
+    //   return true;
+    // });
 
-    this.physics.add.collider(this.stars, this.platforms);
-    this.physics.add.overlap(
-      this.player,
-      this.stars,
-      (
-        player: Phaser.Physics.Arcade.Sprite,
-        star: Phaser.Physics.Arcade.Sprite
-      ) => {
-        this.collectStar(player, star);
-      }
-    );
+    // this.physics.add.collider(this.stars, this.platforms);
+    // this.physics.add.overlap(
+    //   this.player,
+    //   this.stars,
+    //   (
+    //     player: Phaser.Physics.Arcade.Sprite,
+    //     star: Phaser.Physics.Arcade.Sprite
+    //   ) => {
+    //     this.collectStar(player, star);
+    //   }
+    // );
 
     // Scores and scoring
     this.scoreText = this.add.text(16, 16, "Score: 0", {
@@ -130,10 +154,10 @@ export default class Demo extends Phaser.Scene {
       this
     );
 
-    const bomb = this.bombs.create(600, 400, "bomb");
-    bomb.setBounce(1);
-    bomb.setCollideWorldBounds(false);
-    bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
+    // const bomb = this.bombs.create(600, 400, "bomb");
+    // bomb.setBounce(1);
+    // bomb.setCollideWorldBounds(false);
+    // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
   }
 
   update() {
@@ -145,6 +169,8 @@ export default class Demo extends Phaser.Scene {
     if (playerX > this.cameras.main.scrollX + centerX) {
       // Camera
       this.cameras.main.scrollX = playerX - centerX;
+      // Background
+      // this.backgroundImage.x = playerX;
       // Platform
       this.mainPlatform.x = this.cameras.main.scrollX + centerX;
       this.mainPlatform.body.updateFromGameObject();
@@ -177,13 +203,16 @@ export default class Demo extends Phaser.Scene {
 
     if (this.cursors.left.isDown) {
       this.player.setVelocityX(-160);
-      this.player.anims.play("left", true);
+      this.player.setOffset(20, 12);
+      this.player.anims.play("run-left", true);
     } else if (this.cursors.right.isDown) {
       this.player.setVelocityX(160);
-      this.player.anims.play("right", true);
+      this.player.setOffset(5, 12);
+      this.player.anims.play("run-right", true);
     } else {
       this.player.setVelocityX(0);
-      this.player.anims.play("turn");
+      this.player.setOffset(5, 12);
+      this.player.anims.play("idle", true);
     }
 
     if (this.cursors.up?.isDown && this.player.body.touching.down) {

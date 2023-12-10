@@ -38,7 +38,7 @@ export default class Demo extends Phaser.Scene {
       .create(400, 568, "ground")
       .setScale(2)
       .refreshBody();
-    this.platforms.create(600, 400, "ground");
+    this.platforms.create(400, 300, "ground");
     // this.platforms.create(50, 250, "ground");
     // this.platforms.create(750, 220, "ground");
 
@@ -114,7 +114,7 @@ export default class Demo extends Phaser.Scene {
     );
 
     // Scores and scoring
-    this.scoreText = this.add.text(16, 16, "score: 0", {
+    this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontSize: "32px",
       color: "#000",
     });
@@ -129,6 +129,11 @@ export default class Demo extends Phaser.Scene {
       undefined,
       this
     );
+
+    const bomb = this.bombs.create(600, 400, "bomb");
+    bomb.setBounce(1);
+    bomb.setCollideWorldBounds(false);
+    bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
   }
 
   update() {
@@ -144,8 +149,12 @@ export default class Demo extends Phaser.Scene {
       this.mainPlatform.x = this.cameras.main.scrollX + centerX;
       this.mainPlatform.body.updateFromGameObject();
       this.platforms.children.iterate((child) => {
-        if (child !== this.mainPlatform) {
-          child.body.updateFromGameObject();
+        if (child instanceof Phaser.Physics.Arcade.Image) {
+          if (child !== this.mainPlatform) {
+            if (child.body) {
+              child.body.updateFromGameObject();
+            }
+          }
         }
       });
       // Score text
@@ -153,6 +162,12 @@ export default class Demo extends Phaser.Scene {
       this.score = Math.round(this.cameras.main.scrollX / 10);
       this.scoreText.setText("Score: " + this.score);
     }
+
+    this.bombs.children.iterate((child) => {
+      if (child.x < this.cameras.main.scrollX) {
+        child.x = this.cameras.main.scrollX + this.game.config.width;
+      }
+    });
 
     // Disallow player to move beyond left edge
     const leftEdge = this.cameras.main.scrollX;

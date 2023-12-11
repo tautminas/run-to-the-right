@@ -24,16 +24,12 @@ export default class Demo extends Phaser.Scene {
     this.load.image("star", "assets/star.png");
     this.load.image("bomb", "assets/bomb.png");
     this.load.spritesheet("main-idle", "assets/main-idle.png", {
-      frameWidth: 48,
-      frameHeight: 48,
+      frameWidth: 200,
+      frameHeight: 200,
     });
     this.load.spritesheet("main-run-right", "assets/main-run-right.png", {
-      frameWidth: 48,
-      frameHeight: 48,
-    });
-    this.load.spritesheet("main-run-left", "assets/main-run-left.png", {
-      frameWidth: 48,
-      frameHeight: 48,
+      frameWidth: 200,
+      frameHeight: 200,
     });
   }
 
@@ -56,21 +52,19 @@ export default class Demo extends Phaser.Scene {
       .setScale(2)
       .refreshBody();
     // this.platforms.create(400, 300, "ground");
-    // this.platforms.create(50, 250, "ground");
-    // this.platforms.create(750, 220, "ground");
 
     // The player
     this.player = this.physics.add.sprite(100, 450, "main-idle");
-    this.player.setBodySize(24, 36);
-    this.player.setOffset(5, 12);
-    this.player.setScale(1.7);
+    this.player.setBodySize(30, 55);
+    this.player.setOffset(85, 73);
+    this.player.setScale(1.5);
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.anims.create({
       key: "idle",
       frames: this.anims.generateFrameNumbers("main-idle", {
         start: 0,
-        end: 3,
+        end: 7,
       }),
       frameRate: 10,
       repeat: -1,
@@ -80,7 +74,7 @@ export default class Demo extends Phaser.Scene {
       key: "run-right",
       frames: this.anims.generateFrameNumbers("main-run-right", {
         start: 0,
-        end: 5,
+        end: 7,
       }),
       frameRate: 10,
       repeat: -1,
@@ -95,9 +89,6 @@ export default class Demo extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-
-    // Set camera to follow the player
-    // this.cameras.main.startFollow(this.player, true, 0.1, null);
 
     // Adding physics
     this.physics.add.collider(this.player, this.platforms);
@@ -202,16 +193,23 @@ export default class Demo extends Phaser.Scene {
     }
 
     if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.setOffset(20, 12);
-      this.player.anims.play("run-left", true);
+      this.player.setVelocityX(-190);
+      // this.player.setOffset(20, 12);
+      this.player.setScale(
+        -1 * Math.abs(this.player.scaleX),
+        this.player.scaleY
+      );
+      this.player.setOffset(116, 73);
+      this.player.anims.play("run-right", true);
     } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.setOffset(5, 12);
+      this.player.setVelocityX(190);
+      this.player.setScale(1.5);
+      this.player.setOffset(85, 73);
       this.player.anims.play("run-right", true);
     } else {
       this.player.setVelocityX(0);
-      this.player.setOffset(5, 12);
+      this.player.setScale(1.5);
+      this.player.setOffset(85, 73);
       this.player.anims.play("idle", true);
     }
 

@@ -80,16 +80,6 @@ export default class Demo extends Phaser.Scene {
       repeat: -1,
     });
 
-    this.anims.create({
-      key: "run-left",
-      frames: this.anims.generateFrameNumbers("main-run-left", {
-        start: 5,
-        end: 0,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
     // Adding physics
     this.physics.add.collider(this.player, this.platforms);
 

@@ -27,7 +27,11 @@ export default class Demo extends Phaser.Scene {
       frameWidth: 200,
       frameHeight: 200,
     });
-    this.load.spritesheet("main-run-right", "assets/main-run-right.png", {
+    this.load.spritesheet("main-run", "assets/main-run.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-attack", "assets/main-attack.png", {
       frameWidth: 200,
       frameHeight: 200,
     });
@@ -69,15 +73,22 @@ export default class Demo extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-
     this.anims.create({
-      key: "run-right",
-      frames: this.anims.generateFrameNumbers("main-run-right", {
+      key: "run",
+      frames: this.anims.generateFrameNumbers("main-run", {
         start: 0,
         end: 7,
       }),
       frameRate: 10,
       repeat: -1,
+    });
+    this.anims.create({
+      key: "attack",
+      frames: this.anims.generateFrameNumbers("main-attack", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
     });
 
     // Adding physics
@@ -105,7 +116,6 @@ export default class Demo extends Phaser.Scene {
     //   }
     //   return true;
     // });
-
     // this.physics.add.collider(this.stars, this.platforms);
     // this.physics.add.overlap(
     //   this.player,
@@ -135,10 +145,32 @@ export default class Demo extends Phaser.Scene {
       this
     );
 
+    this.isAttackPlaying = false;
+
     // const bomb = this.bombs.create(600, 400, "bomb");
     // bomb.setBounce(1);
     // bomb.setCollideWorldBounds(false);
     // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
+
+    // Attack on A keydown
+    this.input.keyboard.on(
+      "keydown-A",
+      function (event) {
+        if (!this.isAttackPlaying) {
+          this.isAttackPlaying = true;
+          console.log("A key pressed");
+
+          // Play attack animation once
+          this.player.anims
+            .play("attack")
+            .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+              this.isAttackPlaying = false;
+              // Animation complete logic here (if needed)
+            });
+        }
+      },
+      this
+    );
   }
 
   update() {
@@ -151,7 +183,7 @@ export default class Demo extends Phaser.Scene {
       // Camera
       this.cameras.main.scrollX = playerX - centerX;
       // Background
-      // this.backgroundImage.x = playerX;
+      this.backgroundImage.x = playerX;
       // Platform
       this.mainPlatform.x = this.cameras.main.scrollX + centerX;
       this.mainPlatform.body.updateFromGameObject();
@@ -182,29 +214,30 @@ export default class Demo extends Phaser.Scene {
       this.player.x = leftEdge;
     }
 
-    if (this.cursors.left.isDown) {
-      this.player.setVelocityX(-190);
-      // this.player.setOffset(20, 12);
-      this.player.setScale(
-        -1 * Math.abs(this.player.scaleX),
-        this.player.scaleY
-      );
-      this.player.setOffset(116, 73);
-      this.player.anims.play("run-right", true);
-    } else if (this.cursors.right.isDown) {
-      this.player.setVelocityX(190);
-      this.player.setScale(1.5);
-      this.player.setOffset(85, 73);
-      this.player.anims.play("run-right", true);
-    } else {
-      this.player.setVelocityX(0);
-      this.player.setScale(1.5);
-      this.player.setOffset(85, 73);
-      this.player.anims.play("idle", true);
-    }
+    if (!this.isAttackPlaying) {
+      if (this.cursors.left.isDown) {
+        this.player.setVelocityX(-190);
+        this.player.setScale(
+          -1 * Math.abs(this.player.scaleX),
+          this.player.scaleY
+        );
+        this.player.setOffset(116, 73);
+        this.player.anims.play("run", true);
+      } else if (this.cursors.right.isDown) {
+        this.player.setVelocityX(190);
+        this.player.setScale(1.5);
+        this.player.setOffset(85, 73);
+        this.player.anims.play("run", true);
+      } else {
+        this.player.setVelocityX(0);
+        this.player.setScale(1.5);
+        this.player.setOffset(85, 73);
+        this.player.anims.play("idle", true);
+      }
 
-    if (this.cursors.up?.isDown && this.player.body.touching.down) {
-      this.player.setVelocityY(-330);
+      if (this.cursors.up?.isDown && this.player.body.touching.down) {
+        this.player.setVelocityY(-330);
+      }
     }
   }
 
@@ -214,7 +247,6 @@ export default class Demo extends Phaser.Scene {
   ) {
     star.disableBody(true, true);
 
-    // this.score += 10;
     this.scoreText.setText("Score: " + this.score);
 
     if (this.stars.countActive(true) === 0) {

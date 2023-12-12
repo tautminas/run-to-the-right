@@ -158,14 +158,11 @@ export default class Demo extends Phaser.Scene {
       function (event) {
         if (!this.isAttackPlaying) {
           this.isAttackPlaying = true;
-          console.log("A key pressed");
 
-          // Play attack animation once
           this.player.anims
             .play("attack")
             .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
               this.isAttackPlaying = false;
-              // Animation complete logic here (if needed)
             });
         }
       },

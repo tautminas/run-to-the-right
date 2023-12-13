@@ -8,9 +8,9 @@ export default class Demo extends Phaser.Scene {
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private bombs!: Phaser.Physics.Arcade.Group;
-  private gameOver: boolean = false;
   private mainPlatform!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
+  private gameOver: boolean = false;
 
   constructor() {
     super("GameScene");
@@ -42,6 +42,14 @@ export default class Demo extends Phaser.Scene {
     this.load.spritesheet("main-fall", "assets/main-fall.png", {
       frameWidth: 200,
       frameHeight: 200,
+    });
+    this.load.spritesheet("main-death", "assets/main-death.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("explosion", "assets/explosion.png", {
+      frameWidth: 16,
+      frameHeight: 16,
     });
   }
 
@@ -111,6 +119,22 @@ export default class Demo extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("main-fall", {
         start: 0,
         end: 1,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "death",
+      frames: this.anims.generateFrameNumbers("main-death", {
+        start: 0,
+        end: 6,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "explosion",
+      frames: this.anims.generateFrameNumbers("explosion", {
+        start: 0,
+        end: 4,
       }),
       frameRate: 10,
     });
@@ -219,7 +243,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   update() {
-    if (!this.player || !this.cursors) return;
+    if (!this.player || !this.cursors || this.gameOver) return;
 
     // Move camera to the right
     const centerX = this.cameras.main.width / 2;
@@ -313,8 +337,15 @@ export default class Demo extends Phaser.Scene {
     bomb: Phaser.Physics.Arcade.Sprite
   ) {
     this.physics.pause();
-    player.setTint(0xff0000);
-    player.anims.play("turn");
+    bomb.anims
+      .play("explosion")
+      .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        bomb.destroy();
+      });
+    player.anims.play("death");
+    this.player.setVelocityX(0);
+    this.player.setVelocityY(130);
+    this.physics.resume();
     this.gameOver = true;
   }
 }

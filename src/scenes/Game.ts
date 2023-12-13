@@ -35,6 +35,14 @@ export default class Demo extends Phaser.Scene {
       frameWidth: 200,
       frameHeight: 200,
     });
+    this.load.spritesheet("main-jump", "assets/main-jump.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-fall", "assets/main-fall.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
   }
 
   create() {
@@ -87,6 +95,22 @@ export default class Demo extends Phaser.Scene {
       frames: this.anims.generateFrameNumbers("main-attack", {
         start: 0,
         end: 3,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "jump",
+      frames: this.anims.generateFrameNumbers("main-jump", {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "fall",
+      frames: this.anims.generateFrameNumbers("main-fall", {
+        start: 0,
+        end: 1,
       }),
       frameRate: 10,
     });
@@ -168,6 +192,30 @@ export default class Demo extends Phaser.Scene {
       },
       this
     );
+
+    this.input.keyboard.on(
+      "keydown-LEFT",
+      function (event: KeyboardEvent) {
+        // Set velocity for left movement
+        this.player.setVelocityX(-190);
+        this.player.setScale(
+          -1 * Math.abs(this.player.scaleX),
+          this.player.scaleY
+        );
+        this.player.setOffset(116, 73);
+      },
+      this
+    );
+
+    this.input.keyboard.on(
+      "keydown-RIGHT",
+      function (event: KeyboardEvent) {
+        this.player.setVelocityX(190);
+        this.player.setScale(1.5);
+        this.player.setOffset(85, 73);
+      },
+      this
+    );
   }
 
   update() {
@@ -212,18 +260,13 @@ export default class Demo extends Phaser.Scene {
     }
 
     if (!this.isAttackPlaying) {
-      if (this.cursors.left.isDown) {
-        this.player.setVelocityX(-190);
-        this.player.setScale(
-          -1 * Math.abs(this.player.scaleX),
-          this.player.scaleY
-        );
-        this.player.setOffset(116, 73);
-        this.player.anims.play("run", true);
-      } else if (this.cursors.right.isDown) {
-        this.player.setVelocityX(190);
-        this.player.setScale(1.5);
-        this.player.setOffset(85, 73);
+      if (!this.player.body.touching.down) {
+        if (this.player.body.velocity.y < 0) {
+          this.player.anims.play("jump", true);
+        } else {
+          this.player.anims.play("fall", true);
+        }
+      } else if (this.cursors.left.isDown || this.cursors.right.isDown) {
         this.player.anims.play("run", true);
       } else {
         this.player.setVelocityX(0);

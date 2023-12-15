@@ -11,6 +11,7 @@ export default class Demo extends Phaser.Scene {
   private mainPlatform!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
+  private isAttackPlaying = false;
 
   constructor() {
     super("GameScene");
@@ -193,53 +194,38 @@ export default class Demo extends Phaser.Scene {
       this
     );
 
-    this.isAttackPlaying = false;
-
     // const bomb = this.bombs.create(600, 400, "bomb");
     // bomb.setBounce(1);
     // bomb.setCollideWorldBounds(false);
     // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
 
     // Attack on A keydown
-    this.input.keyboard.on(
-      "keydown-A",
-      function (event) {
-        if (!this.isAttackPlaying) {
-          this.isAttackPlaying = true;
+    this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
+      if (!this.isAttackPlaying) {
+        this.isAttackPlaying = true;
 
-          this.player.anims
-            .play("attack")
-            .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-              this.isAttackPlaying = false;
-            });
-        }
-      },
-      this
-    );
+        this.player.anims
+          .play("attack")
+          .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+            this.isAttackPlaying = false;
+          });
+      }
+    });
 
-    this.input.keyboard.on(
-      "keydown-LEFT",
-      function (event: KeyboardEvent) {
-        // Set velocity for left movement
-        this.player.setVelocityX(-190);
-        this.player.setScale(
-          -1 * Math.abs(this.player.scaleX),
-          this.player.scaleY
-        );
-        this.player.setOffset(116, 73);
-      },
-      this
-    );
+    this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
+      this.player.setVelocityX(-190);
+      this.player.setScale(
+        -1 * Math.abs(this.player.scaleX),
+        this.player.scaleY
+      );
+      this.player.setOffset(116, 73);
+    });
 
-    this.input.keyboard.on(
-      "keydown-RIGHT",
-      function (event: KeyboardEvent) {
-        this.player.setVelocityX(190);
-        this.player.setScale(1.5);
-        this.player.setOffset(85, 73);
-      },
-      this
-    );
+    this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
+      this.player.setVelocityX(190);
+      this.player.setScale(1.5);
+      this.player.setOffset(85, 73);
+    });
   }
 
   update() {

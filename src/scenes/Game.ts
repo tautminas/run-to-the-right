@@ -194,10 +194,10 @@ export default class Demo extends Phaser.Scene {
       this
     );
 
-    // const bomb = this.bombs.create(600, 400, "bomb");
-    // bomb.setBounce(1);
-    // bomb.setCollideWorldBounds(false);
-    // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
+    const bomb = this.bombs.create(600, 400, "bomb");
+    bomb.setBounce(1);
+    bomb.setCollideWorldBounds(false);
+    bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
 
     // Attack on A keydown
     this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
@@ -318,19 +318,17 @@ export default class Demo extends Phaser.Scene {
     }
   }
 
-  hitBomb(
-    player: Phaser.Physics.Arcade.Sprite,
-    bomb: Phaser.Physics.Arcade.Sprite
-  ) {
-    this.physics.pause();
-    bomb.anims
+  hitBomb(player: any, bomb: any) {
+    const playerSprite = player as Phaser.Physics.Arcade.Sprite;
+    const bombSprite = bomb as Phaser.Physics.Arcade.Sprite;
+    bombSprite.anims
       .play("explosion")
       .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
         bomb.destroy();
       });
-    player.anims.play("death");
-    this.player.setVelocityX(0);
-    this.player.setVelocityY(130);
+    playerSprite.anims.play("death");
+    playerSprite.setVelocityX(0);
+    playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
   }

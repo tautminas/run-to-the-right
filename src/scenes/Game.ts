@@ -203,7 +203,6 @@ export default class Demo extends Phaser.Scene {
     this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
       if (!this.isAttackPlaying) {
         this.isAttackPlaying = true;
-
         this.player.anims
           .play("attack")
           .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
@@ -241,26 +240,37 @@ export default class Demo extends Phaser.Scene {
       this.backgroundImage.x = playerX;
       // Platform
       this.mainPlatform.x = this.cameras.main.scrollX + centerX;
-      this.mainPlatform.body.updateFromGameObject();
-      this.platforms.children.iterate((child) => {
-        if (child instanceof Phaser.Physics.Arcade.Image) {
-          if (child !== this.mainPlatform) {
-            if (child.body) {
-              child.body.updateFromGameObject();
+      if (this.mainPlatform && this.mainPlatform.body) {
+        this.mainPlatform.body.updateFromGameObject();
+      }
+      this.platforms.children.iterate(
+        (child: Phaser.GameObjects.GameObject) => {
+          if (child instanceof Phaser.Physics.Arcade.Image) {
+            if (child !== this.mainPlatform) {
+              if (child.body) {
+                child.body.updateFromGameObject();
+              }
             }
           }
+          return true;
         }
-      });
+      );
       // Score text
       this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
       this.score = Math.round(this.cameras.main.scrollX / 10);
       this.scoreText.setText("Score: " + this.score);
     }
 
-    this.bombs.children.iterate((child) => {
-      if (child.x < this.cameras.main.scrollX) {
-        child.x = this.cameras.main.scrollX + this.game.config.width;
+    this.bombs.children.iterate((child: Phaser.GameObjects.GameObject) => {
+      if (child instanceof Phaser.Physics.Arcade.Sprite) {
+        if (typeof this.game.config.width === "number") {
+          if (child.x < this.cameras.main.scrollX) {
+            child.x =
+              this.cameras.main.scrollX + Number(this.game.config.width);
+          }
+        }
       }
+      return true;
     });
 
     // Disallow player to move beyond left edge
@@ -300,10 +310,11 @@ export default class Demo extends Phaser.Scene {
     this.scoreText.setText("Score: " + this.score);
 
     if (this.stars.countActive(true) === 0) {
-      this.stars.children.iterate(function (child) {
+      this.stars.children.iterate((child: Phaser.GameObjects.GameObject) => {
         if (child instanceof Phaser.Physics.Arcade.Sprite) {
           child.enableBody(true, child.x, 0, true, true);
         }
+        return true;
       });
 
       var x =
@@ -318,7 +329,12 @@ export default class Demo extends Phaser.Scene {
     }
   }
 
-  hitBomb(player: any, bomb: any) {
+  hitBomb(
+    player:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    bomb: Phaser.Types.Physics.Arcade.GameObjectWithBody | Phaser.Tilemaps.Tile
+  ) {
     const playerSprite = player as Phaser.Physics.Arcade.Sprite;
     const bombSprite = bomb as Phaser.Physics.Arcade.Sprite;
     bombSprite.anims

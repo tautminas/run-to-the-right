@@ -8,6 +8,7 @@ export default class Demo extends Phaser.Scene {
   private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private bombs!: Phaser.Physics.Arcade.Group;
+  private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private mainPlatform!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
@@ -51,6 +52,26 @@ export default class Demo extends Phaser.Scene {
     this.load.spritesheet("explosion", "assets/explosion.png", {
       frameWidth: 16,
       frameHeight: 16,
+    });
+    this.load.spritesheet(
+      "eye-monster-flight",
+      "assets/eye-monster-flight.png",
+      {
+        frameWidth: 150,
+        frameHeight: 150,
+      }
+    );
+    this.load.spritesheet(
+      "eye-monster-attack",
+      "assets/eye-monster-attack.png",
+      {
+        frameWidth: 150,
+        frameHeight: 150,
+      }
+    );
+    this.load.spritesheet("eye-monster-death", "assets/eye-monster-death.png", {
+      frameWidth: 150,
+      frameHeight: 150,
     });
   }
 
@@ -139,6 +160,15 @@ export default class Demo extends Phaser.Scene {
       }),
       frameRate: 10,
     });
+    this.anims.create({
+      key: "eye-monster-flight",
+      frames: this.anims.generateFrameNumbers("eye-monster-flight", {
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
 
     // Adding physics
     this.physics.add.collider(this.player, this.platforms);
@@ -194,10 +224,31 @@ export default class Demo extends Phaser.Scene {
       this
     );
 
-    const bomb = this.bombs.create(600, 400, "bomb");
-    bomb.setBounce(1);
-    bomb.setCollideWorldBounds(false);
-    bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
+    // const bomb = this.bombs.create(600, 400, "bomb");
+    // bomb.setBounce(1);
+    // bomb.setCollideWorldBounds(false);
+    // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
+
+    // Flying eye monsters
+    // this.player = this.physics.add.sprite(100, 450, "main-idle");
+    // this.player.setBodySize(30, 55);
+    // this.player.setOffset(85, 73);
+    // this.player.setScale(1.5);
+    // this.player.setBounce(0.2);
+    // this.player.setCollideWorldBounds(true);
+
+    const flyingEyeMonster = this.physics.add.sprite(
+      600,
+      450,
+      "eye-monster-flight"
+    );
+    flyingEyeMonster.setBodySize(45, 45);
+    flyingEyeMonster.setOffset(100, 60);
+    flyingEyeMonster.setScale(-1.5, 1.5);
+    flyingEyeMonster.setBounce(0.2);
+    flyingEyeMonster.setCollideWorldBounds(true);
+    flyingEyeMonster.anims.play("eye-monster-flight");
+    this.physics.add.collider(this.platforms, flyingEyeMonster);
 
     // Attack on A keydown
     this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {

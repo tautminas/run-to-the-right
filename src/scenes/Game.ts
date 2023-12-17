@@ -76,6 +76,9 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
+    // Set gravity
+    this.physics.world.gravity.y = 900;
+
     // Remove the boundaries from the right side
     this.physics.world.setBounds(
       0,
@@ -224,31 +227,25 @@ export default class Demo extends Phaser.Scene {
       this
     );
 
+    // Bombs
     // const bomb = this.bombs.create(600, 400, "bomb");
     // bomb.setBounce(1);
     // bomb.setCollideWorldBounds(false);
     // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
 
     // Flying eye monsters
-    // this.player = this.physics.add.sprite(100, 450, "main-idle");
-    // this.player.setBodySize(30, 55);
-    // this.player.setOffset(85, 73);
-    // this.player.setScale(1.5);
-    // this.player.setBounce(0.2);
-    // this.player.setCollideWorldBounds(true);
-
-    const flyingEyeMonster = this.physics.add.sprite(
-      600,
-      450,
-      "eye-monster-flight"
-    );
-    flyingEyeMonster.setBodySize(45, 45);
-    flyingEyeMonster.setOffset(100, 60);
-    flyingEyeMonster.setScale(-1.5, 1.5);
-    flyingEyeMonster.setBounce(0.2);
-    flyingEyeMonster.setCollideWorldBounds(true);
-    flyingEyeMonster.anims.play("eye-monster-flight");
-    this.physics.add.collider(this.platforms, flyingEyeMonster);
+    // const flyingEyeMonster = this.physics.add.sprite(
+    //   600,
+    //   450,
+    //   "eye-monster-flight"
+    // );
+    // flyingEyeMonster.setBodySize(45, 45);
+    // flyingEyeMonster.setOffset(100, 60);
+    // flyingEyeMonster.setScale(-1.5, 1.5);
+    // flyingEyeMonster.setBounce(0.2);
+    // flyingEyeMonster.setCollideWorldBounds(true);
+    // flyingEyeMonster.anims.play("eye-monster-flight");
+    // this.physics.add.collider(this.platforms, flyingEyeMonster);
 
     // Attack on A keydown
     this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
@@ -347,7 +344,7 @@ export default class Demo extends Phaser.Scene {
       }
 
       if (this.cursors.up?.isDown && this.player.body.touching.down) {
-        this.player.setVelocityY(-330);
+        this.player.setVelocityY(-550);
       }
     }
   }

@@ -12,7 +12,9 @@ export default class Demo extends Phaser.Scene {
   private mainPlatform!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
-  private isAttackPlaying = false;
+  private isAttackPlaying: boolean = false;
+  private isRightKeyDown: boolean = false;
+  private isLeftKeyDown: boolean = false;
 
   constructor() {
     super("GameScene");
@@ -249,17 +251,33 @@ export default class Demo extends Phaser.Scene {
 
     // Attack on A keydown
     this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
+      if (this.player.body.onFloor()) {
+        this.player.setVelocityX(0);
+      }
       if (!this.isAttackPlaying) {
         this.isAttackPlaying = true;
         this.player.anims
           .play("attack")
           .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
             this.isAttackPlaying = false;
+            if (this.isRightKeyDown) {
+              this.player.setVelocityX(190);
+              this.player.setScale(1.5);
+              this.player.setOffset(85, 73);
+            } else if (this.isLeftKeyDown) {
+              this.player.setVelocityX(-190);
+              this.player.setScale(
+                -1 * Math.abs(this.player.scaleX),
+                this.player.scaleY
+              );
+              this.player.setOffset(116, 73);
+            }
           });
       }
     });
 
     this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
+      this.isLeftKeyDown = true;
       this.player.setVelocityX(-190);
       this.player.setScale(
         -1 * Math.abs(this.player.scaleX),
@@ -268,10 +286,19 @@ export default class Demo extends Phaser.Scene {
       this.player.setOffset(116, 73);
     });
 
+    this.input.keyboard?.on("keyup-LEFT", () => {
+      this.isLeftKeyDown = false;
+    });
+
     this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
+      this.isRightKeyDown = true;
       this.player.setVelocityX(190);
       this.player.setScale(1.5);
       this.player.setOffset(85, 73);
+    });
+
+    this.input.keyboard?.on("keyup-RIGHT", () => {
+      this.isRightKeyDown = false;
     });
   }
 

@@ -105,7 +105,6 @@ export default class Demo extends Phaser.Scene {
     this.player.setBodySize(30, 55);
     this.player.setOffset(85, 73);
     this.player.setScale(1.5);
-    this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.anims.create({
       key: "idle",

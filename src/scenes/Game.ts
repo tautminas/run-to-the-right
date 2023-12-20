@@ -25,6 +25,7 @@ export default class Demo extends Phaser.Scene {
     this.load.image("logo", "assets/phaser3-logo.png");
     this.load.image("sky", "assets/sky.png");
     this.load.image("ground", "assets/platform.png");
+    this.load.image("tiles", "assets/tileset.png");
     this.load.image("star", "assets/star.png");
     this.load.image("bomb", "assets/bomb.png");
     this.load.spritesheet("main-idle", "assets/main-idle.png", {
@@ -98,7 +99,7 @@ export default class Demo extends Phaser.Scene {
       .create(400, 568, "ground")
       .setScale(2)
       .refreshBody();
-    // this.platforms.create(400, 300, "ground");
+    this.platforms.create(400, 300, "ground");
 
     // The player
     this.player = this.physics.add.sprite(100, 450, "main-idle");
@@ -299,6 +300,24 @@ export default class Demo extends Phaser.Scene {
     this.input.keyboard?.on("keyup-RIGHT", () => {
       this.isRightKeyDown = false;
     });
+
+    const map = this.make.tilemap({
+      tileWidth: 24,
+      tileHeight: 24,
+      width: 100,
+      height: 15,
+    });
+    const tileset = map.addTilesetImage("tiles");
+    const platformLayer = map.createBlankLayer("platform", tileset);
+    const startXInPixels = 200;
+    const startYInPixels = 336;
+    const startX = platformLayer.worldToTileX(startXInPixels);
+    const startY = platformLayer.worldToTileY(startYInPixels);
+    let width = 17;
+    const height = 1;
+    platformLayer.fill(2, startX, startY, width, height);
+    platformLayer.putTileAt(0, startX, startY);
+    platformLayer.putTileAt(3, startX + width - 1, startY);
   }
 
   update() {

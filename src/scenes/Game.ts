@@ -315,14 +315,16 @@ export default class Demo extends Phaser.Scene {
     const startX = platformLayer.worldToTileX(startXInPixels);
     const startY = platformLayer.worldToTileY(startYInPixels);
     const width = 17;
-    const height = 1;
 
     platformLayer.fill(2, startX, startY + 1, width, 1);
     platformLayer.putTileAt(0, startX, startY + 1);
     platformLayer.putTileAt(3, startX + width - 1, startY + 1);
-    platformLayer.fill(64, startX, startY + 2, width, height);
+    platformLayer.fill(64, startX, startY + 2, width, 1);
     platformLayer.putTileAt(63, startX, startY + 2);
     platformLayer.putTileAt(66, startX + width - 1, startY + 2);
+
+    platformLayer.setCollision([0, 2, 3, 63, 64, 66]);
+    this.physics.add.collider(this.player, platformLayer);
   }
 
   update() {

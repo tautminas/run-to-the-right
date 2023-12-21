@@ -305,19 +305,24 @@ export default class Demo extends Phaser.Scene {
       tileWidth: 24,
       tileHeight: 24,
       width: 100,
-      height: 15,
+      height: 100,
     });
     const tileset = map.addTilesetImage("tiles");
     const platformLayer = map.createBlankLayer("platform", tileset);
+
     const startXInPixels = 200;
     const startYInPixels = 336;
     const startX = platformLayer.worldToTileX(startXInPixels);
     const startY = platformLayer.worldToTileY(startYInPixels);
-    let width = 17;
+    const width = 17;
     const height = 1;
-    platformLayer.fill(2, startX, startY, width, height);
-    platformLayer.putTileAt(0, startX, startY);
-    platformLayer.putTileAt(3, startX + width - 1, startY);
+
+    platformLayer.fill(2, startX, startY + 1, width, 1);
+    platformLayer.putTileAt(0, startX, startY + 1);
+    platformLayer.putTileAt(3, startX + width - 1, startY + 1);
+    platformLayer.fill(64, startX, startY + 2, width, height);
+    platformLayer.putTileAt(63, startX, startY + 2);
+    platformLayer.putTileAt(66, startX + width - 1, startY + 2);
   }
 
   update() {

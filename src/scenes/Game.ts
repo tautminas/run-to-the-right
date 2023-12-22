@@ -109,18 +109,31 @@ export default class Demo extends Phaser.Scene {
 
     // Platforms
     this.platforms = this.physics.add.staticGroup();
-    // 1)
-    // this.platforms.create(300, 400, "platform").refreshBody();
-    // this.platforms.create(500, 250, "platform").refreshBody();
-    // 2)
-    // this.platforms.create(500, 400, "platform").refreshBody();
-    // this.platforms.create(300, 250, "platform").refreshBody();
-    // 3)
-    // this.platforms.create(400, 400, "platform").refreshBody();
-    // this.platforms.create(50, 250, "platform").refreshBody();
-    // this.platforms.create(750, 250, "platform").refreshBody();
-    // 4)
-    this.platforms.create(400, 397, "platform").refreshBody();
+    const platformCreationActions = [
+      () => {
+        this.platforms.create(300, 400, "platform").refreshBody();
+        this.platforms.create(500, 250, "platform").refreshBody();
+      },
+      () => {
+        this.platforms.create(500, 400, "platform").refreshBody();
+        this.platforms.create(300, 250, "platform").refreshBody();
+      },
+      () => {
+        this.platforms.create(400, 400, "platform").refreshBody();
+        this.platforms.create(50, 250, "platform").refreshBody();
+        this.platforms.create(750, 250, "platform").refreshBody();
+      },
+      () => {
+        this.platforms.create(400, 397, "platform").refreshBody();
+      },
+    ];
+    const randomIndex = Phaser.Math.RND.between(
+      0,
+      platformCreationActions.length - 1
+    );
+    const selectedAction = platformCreationActions[randomIndex];
+    selectedAction();
+    // this.platforms.create(400, 397, "platform").refreshBody();
 
     // Adding physics
     this.physics.add.collider(this.player, this.ground);
@@ -311,6 +324,95 @@ export default class Demo extends Phaser.Scene {
       this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
       this.score = Math.round(this.cameras.main.scrollX / 10);
       this.scoreText.setText("Score: " + this.score);
+    }
+
+    this.platforms
+      .getChildren()
+      .forEach((platform: Phaser.GameObjects.GameObject) => {
+        console.log(this.cameras.main.scrollX);
+        console.log(platform.x + platform.displayWidth / 2);
+        if (
+          this.cameras.main.scrollX >
+          platform.x + platform.displayWidth / 2
+        ) {
+          // platform.x = this.cameras.main.scrollX + this.cameras.main.width;
+          platform.destroy();
+        }
+      });
+
+    if (this.platforms.getChildren().length === 0) {
+      const platformCreationActions = [
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              400,
+              "platform"
+            )
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 200,
+              250,
+              "platform"
+            )
+            .refreshBody();
+        },
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 200,
+              400,
+              "platform"
+            )
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              250,
+              "platform"
+            )
+            .refreshBody();
+        },
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 350,
+              400,
+              "platform"
+            )
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              250,
+              "platform"
+            )
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 700,
+              250,
+              "platform"
+            )
+            .refreshBody();
+        },
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              397,
+              "platform"
+            )
+            .refreshBody();
+        },
+      ];
+      const randomIndex = Phaser.Math.RND.between(
+        0,
+        platformCreationActions.length - 1
+      );
+      const selectedAction = platformCreationActions[randomIndex];
+      selectedAction();
     }
 
     this.bombs.children.iterate((child: Phaser.GameObjects.GameObject) => {

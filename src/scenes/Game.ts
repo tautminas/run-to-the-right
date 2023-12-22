@@ -24,7 +24,7 @@ export default class Demo extends Phaser.Scene {
     // Loading assets
     this.load.image("logo", "assets/phaser3-logo.png");
     this.load.image("sky", "assets/sky.png");
-    // this.load.image("ground", "assets/platform.png");
+    this.load.image("platform", "assets/platform.png");
     this.load.image("tiles", "assets/tileset.png");
     this.load.image("star", "assets/star.png");
     this.load.image("bomb", "assets/bomb.png");
@@ -107,8 +107,24 @@ export default class Demo extends Phaser.Scene {
     this.player.setScale(1.5);
     this.player.setCollideWorldBounds(true);
 
+    // Platforms
+    this.platforms = this.physics.add.staticGroup();
+    // 1)
+    // this.platforms.create(300, 400, "platform").refreshBody();
+    // this.platforms.create(500, 250, "platform").refreshBody();
+    // 2)
+    // this.platforms.create(500, 400, "platform").refreshBody();
+    // this.platforms.create(300, 250, "platform").refreshBody();
+    // 3)
+    // this.platforms.create(400, 400, "platform").refreshBody();
+    // this.platforms.create(50, 250, "platform").refreshBody();
+    // this.platforms.create(750, 250, "platform").refreshBody();
+    // 4)
+    this.platforms.create(400, 397, "platform").refreshBody();
+
     // Adding physics
     this.physics.add.collider(this.player, this.ground);
+    this.physics.add.collider(this.player, this.platforms);
 
     this.anims.create({
       key: "idle",
@@ -184,33 +200,6 @@ export default class Demo extends Phaser.Scene {
     } else {
       console.error("Input or keyboard is not available");
     }
-
-    // Collecting stars
-    // this.stars = this.physics.add.group({
-    //   key: "star",
-    //   repeat: 11,
-    //   setXY: { x: 12, y: 0, stepX: 70 },
-    // });
-    // this.stars.children.iterate((child: Phaser.GameObjects.GameObject) => {
-    //   if (
-    //     child instanceof Phaser.Physics.Arcade.Sprite &&
-    //     child.body instanceof Phaser.Physics.Arcade.Body
-    //   ) {
-    //     child.body.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-    //   }
-    //   return true;
-    // });
-    // this.physics.add.collider(this.stars, this.platforms);
-    // this.physics.add.overlap(
-    //   this.player,
-    //   this.stars,
-    //   (
-    //     player: Phaser.Physics.Arcade.Sprite,
-    //     star: Phaser.Physics.Arcade.Sprite
-    //   ) => {
-    //     this.collectStar(player, star);
-    //   }
-    // );
 
     // Scores and scoring
     this.scoreText = this.add.text(16, 16, "Score: 0", {
@@ -362,34 +351,6 @@ export default class Demo extends Phaser.Scene {
       if (this.cursors.up?.isDown && this.player.body.touching.down) {
         this.player.setVelocityY(-550);
       }
-    }
-  }
-
-  collectStar(
-    player: Phaser.Physics.Arcade.Sprite,
-    star: Phaser.Physics.Arcade.Image
-  ) {
-    star.disableBody(true, true);
-
-    this.scoreText.setText("Score: " + this.score);
-
-    if (this.stars.countActive(true) === 0) {
-      this.stars.children.iterate((child: Phaser.GameObjects.GameObject) => {
-        if (child instanceof Phaser.Physics.Arcade.Sprite) {
-          child.enableBody(true, child.x, 0, true, true);
-        }
-        return true;
-      });
-
-      var x =
-        player.x < 400
-          ? Phaser.Math.Between(400, 800)
-          : Phaser.Math.Between(0, 400);
-
-      var bomb = this.bombs.create(x, 16, "bomb");
-      bomb.setBounce(1);
-      bomb.setCollideWorldBounds(true);
-      bomb.setVelocity(Phaser.Math.Between(-200, 200), 20);
     }
   }
 

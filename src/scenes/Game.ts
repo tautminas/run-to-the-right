@@ -9,7 +9,7 @@ export default class Demo extends Phaser.Scene {
   private scoreText!: Phaser.GameObjects.Text;
   private bombs!: Phaser.Physics.Arcade.Group;
   private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
-  private mainPlatform!: Phaser.Physics.Arcade.Image;
+  private ground!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
   private isAttackPlaying: boolean = false;
@@ -24,10 +24,11 @@ export default class Demo extends Phaser.Scene {
     // Loading assets
     this.load.image("logo", "assets/phaser3-logo.png");
     this.load.image("sky", "assets/sky.png");
-    this.load.image("ground", "assets/platform.png");
+    // this.load.image("ground", "assets/platform.png");
     this.load.image("tiles", "assets/tileset.png");
     this.load.image("star", "assets/star.png");
     this.load.image("bomb", "assets/bomb.png");
+    this.load.image("ground", "assets/ground.png");
     this.load.spritesheet("main-idle", "assets/main-idle.png", {
       frameWidth: 200,
       frameHeight: 200,
@@ -93,13 +94,11 @@ export default class Demo extends Phaser.Scene {
     // World building
     this.backgroundImage = this.add.image(400, 300, "sky");
 
-    // The platforms
-    this.platforms = this.physics.add.staticGroup();
-    this.mainPlatform = this.platforms
-      .create(400, 568, "ground")
-      .setScale(2)
+    // Ground
+    this.ground = this.physics.add
+      .staticSprite(this.scale.width * 0.5, this.scale.height, "ground")
+      .setOrigin(0.5, 1)
       .refreshBody();
-    this.platforms.create(400, 300, "ground");
 
     // The player
     this.player = this.physics.add.sprite(100, 450, "main-idle");
@@ -107,11 +106,15 @@ export default class Demo extends Phaser.Scene {
     this.player.setOffset(85, 73);
     this.player.setScale(1.5);
     this.player.setCollideWorldBounds(true);
+
+    // Adding physics
+    this.physics.add.collider(this.player, this.ground);
+
     this.anims.create({
       key: "idle",
       frames: this.anims.generateFrameNumbers("main-idle", {
         start: 0,
-        end: 7,
+        end: 3,
       }),
       frameRate: 10,
       repeat: -1,
@@ -174,9 +177,6 @@ export default class Demo extends Phaser.Scene {
       frameRate: 10,
       repeat: -1,
     });
-
-    // Adding physics
-    this.physics.add.collider(this.player, this.platforms);
 
     // Keyboard controls
     if (this.input && this.input.keyboard) {
@@ -300,31 +300,6 @@ export default class Demo extends Phaser.Scene {
     this.input.keyboard?.on("keyup-RIGHT", () => {
       this.isRightKeyDown = false;
     });
-
-    const map = this.make.tilemap({
-      tileWidth: 24,
-      tileHeight: 24,
-      width: 100,
-      height: 100,
-    });
-    const tileset = map.addTilesetImage("tiles");
-    const platformLayer = map.createBlankLayer("platform", tileset);
-
-    const startXInPixels = 200;
-    const startYInPixels = 336;
-    const startX = platformLayer.worldToTileX(startXInPixels);
-    const startY = platformLayer.worldToTileY(startYInPixels);
-    const width = 17;
-
-    platformLayer.fill(2, startX, startY + 1, width, 1);
-    platformLayer.putTileAt(0, startX, startY + 1);
-    platformLayer.putTileAt(3, startX + width - 1, startY + 1);
-    platformLayer.fill(64, startX, startY + 2, width, 1);
-    platformLayer.putTileAt(63, startX, startY + 2);
-    platformLayer.putTileAt(66, startX + width - 1, startY + 2);
-
-    platformLayer.setCollision([0, 2, 3, 63, 64, 66]);
-    this.physics.add.collider(this.player, platformLayer);
   }
 
   update() {
@@ -339,22 +314,10 @@ export default class Demo extends Phaser.Scene {
       // Background
       this.backgroundImage.x = playerX;
       // Platform
-      this.mainPlatform.x = this.cameras.main.scrollX + centerX;
-      if (this.mainPlatform && this.mainPlatform.body) {
-        this.mainPlatform.body.updateFromGameObject();
+      this.ground.x = this.cameras.main.scrollX + centerX;
+      if (this.ground && this.ground.body) {
+        this.ground.body.updateFromGameObject();
       }
-      this.platforms.children.iterate(
-        (child: Phaser.GameObjects.GameObject) => {
-          if (child instanceof Phaser.Physics.Arcade.Image) {
-            if (child !== this.mainPlatform) {
-              if (child.body) {
-                child.body.updateFromGameObject();
-              }
-            }
-          }
-          return true;
-        }
-      );
       // Score text
       this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
       this.score = Math.round(this.cameras.main.scrollX / 10);
@@ -379,6 +342,7 @@ export default class Demo extends Phaser.Scene {
       this.player.x = leftEdge;
     }
 
+    // Player animations
     if (!this.isAttackPlaying) {
       if (!this.player.body.touching.down) {
         if (this.player.body.velocity.y < 0) {

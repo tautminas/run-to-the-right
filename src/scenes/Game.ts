@@ -329,8 +329,6 @@ export default class Demo extends Phaser.Scene {
     this.platforms
       .getChildren()
       .forEach((platform: Phaser.GameObjects.GameObject) => {
-        console.log(this.cameras.main.scrollX);
-        console.log(platform.x + platform.displayWidth / 2);
         if (
           this.cameras.main.scrollX >
           platform.x + platform.displayWidth / 2

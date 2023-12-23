@@ -111,20 +111,44 @@ export default class Demo extends Phaser.Scene {
     this.platforms = this.physics.add.staticGroup();
     const platformCreationActions = [
       () => {
-        this.platforms.create(300, 400, "platform").refreshBody();
-        this.platforms.create(500, 250, "platform").refreshBody();
+        this.platforms
+          .create(100, 400, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(300, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
       },
       () => {
-        this.platforms.create(500, 400, "platform").refreshBody();
-        this.platforms.create(300, 250, "platform").refreshBody();
+        this.platforms
+          .create(300, 400, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(100, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
       },
       () => {
-        this.platforms.create(400, 400, "platform").refreshBody();
-        this.platforms.create(50, 250, "platform").refreshBody();
-        this.platforms.create(750, 250, "platform").refreshBody();
+        this.platforms
+          .create(200, 400, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(-150, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(550, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
       },
       () => {
-        this.platforms.create(400, 397, "platform").refreshBody();
+        this.platforms
+          .create(200, 397, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
       },
     ];
     const randomIndex = Phaser.Math.RND.between(
@@ -329,10 +353,7 @@ export default class Demo extends Phaser.Scene {
     this.platforms
       .getChildren()
       .forEach((platform: Phaser.GameObjects.GameObject) => {
-        if (
-          this.cameras.main.scrollX >
-          platform.x + platform.displayWidth / 2
-        ) {
+        if (this.cameras.main.scrollX > platform.x + platform.displayWidth) {
           // platform.x = this.cameras.main.scrollX + this.cameras.main.width;
           platform.destroy();
         }
@@ -347,6 +368,7 @@ export default class Demo extends Phaser.Scene {
               400,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
           this.platforms
             .create(
@@ -354,6 +376,7 @@ export default class Demo extends Phaser.Scene {
               250,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
         },
         () => {
@@ -363,6 +386,7 @@ export default class Demo extends Phaser.Scene {
               400,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
           this.platforms
             .create(
@@ -370,6 +394,7 @@ export default class Demo extends Phaser.Scene {
               250,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
         },
         () => {
@@ -379,6 +404,7 @@ export default class Demo extends Phaser.Scene {
               400,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
           this.platforms
             .create(
@@ -386,6 +412,7 @@ export default class Demo extends Phaser.Scene {
               250,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
           this.platforms
             .create(
@@ -393,6 +420,7 @@ export default class Demo extends Phaser.Scene {
               250,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
         },
         () => {
@@ -402,6 +430,7 @@ export default class Demo extends Phaser.Scene {
               397,
               "platform"
             )
+            .setOrigin(0, 0.5)
             .refreshBody();
         },
       ];

@@ -354,7 +354,9 @@ export default class Demo extends Phaser.Scene {
     this.platforms
       .getChildren()
       .forEach((platform: Phaser.GameObjects.GameObject) => {
-        const platformRightX = platform.x + platform.displayWidth;
+        const platformSprite = platform as Phaser.Physics.Arcade.Sprite;
+
+        const platformRightX = platformSprite.x + platformSprite.displayWidth;
 
         if (platformRightX > this.rightMostPlatformX) {
           this.rightMostPlatformX = platformRightX;

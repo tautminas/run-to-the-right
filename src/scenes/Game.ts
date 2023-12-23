@@ -15,6 +15,7 @@ export default class Demo extends Phaser.Scene {
   private isAttackPlaying: boolean = false;
   private isRightKeyDown: boolean = false;
   private isLeftKeyDown: boolean = false;
+  private rightMostPlatformX: number = 0;
 
   constructor() {
     super("GameScene");
@@ -353,13 +354,20 @@ export default class Demo extends Phaser.Scene {
     this.platforms
       .getChildren()
       .forEach((platform: Phaser.GameObjects.GameObject) => {
-        if (this.cameras.main.scrollX > platform.x + platform.displayWidth) {
-          // platform.x = this.cameras.main.scrollX + this.cameras.main.width;
+        const platformRightX = platform.x + platform.displayWidth;
+
+        if (platformRightX > this.rightMostPlatformX) {
+          this.rightMostPlatformX = platformRightX;
+        }
+
+        if (platformRightX < this.cameras.main.scrollX) {
           platform.destroy();
         }
       });
 
-    if (this.platforms.getChildren().length === 0) {
+    const screenThresholdX =
+      this.cameras.main.scrollX + this.cameras.main.width * 0.8;
+    if (this.rightMostPlatformX < screenThresholdX) {
       const platformCreationActions = [
         () => {
           this.platforms

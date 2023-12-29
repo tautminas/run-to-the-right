@@ -4,11 +4,8 @@ export default class Demo extends Phaser.Scene {
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private stars!: Phaser.Physics.Arcade.Group;
-  private score: number = 0;
   private scoreText!: Phaser.GameObjects.Text;
   private bombs!: Phaser.Physics.Arcade.Group;
-  private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private ground!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
@@ -16,234 +13,26 @@ export default class Demo extends Phaser.Scene {
   private isRightKeyDown: boolean = false;
   private isLeftKeyDown: boolean = false;
   private rightMostPlatformX: number = 0;
+  private score: number = 0;
 
   constructor() {
     super("GameScene");
   }
 
   preload() {
-    // Loading assets
-    this.load.image("logo", "assets/phaser3-logo.png");
-    this.load.image("sky", "assets/sky.png");
-    this.load.image("platform", "assets/platform.png");
-    this.load.image("tiles", "assets/tileset.png");
-    this.load.image("star", "assets/star.png");
-    this.load.image("bomb", "assets/bomb.png");
-    this.load.image("ground", "assets/ground.png");
-    this.load.spritesheet("main-idle", "assets/main-idle.png", {
-      frameWidth: 200,
-      frameHeight: 200,
-    });
-    this.load.spritesheet("main-run", "assets/main-run.png", {
-      frameWidth: 200,
-      frameHeight: 200,
-    });
-    this.load.spritesheet("main-attack", "assets/main-attack.png", {
-      frameWidth: 200,
-      frameHeight: 200,
-    });
-    this.load.spritesheet("main-jump", "assets/main-jump.png", {
-      frameWidth: 200,
-      frameHeight: 200,
-    });
-    this.load.spritesheet("main-fall", "assets/main-fall.png", {
-      frameWidth: 200,
-      frameHeight: 200,
-    });
-    this.load.spritesheet("main-death", "assets/main-death.png", {
-      frameWidth: 200,
-      frameHeight: 200,
-    });
-    this.load.spritesheet("explosion", "assets/explosion.png", {
-      frameWidth: 16,
-      frameHeight: 16,
-    });
-    this.load.spritesheet(
-      "eye-monster-flight",
-      "assets/eye-monster-flight.png",
-      {
-        frameWidth: 150,
-        frameHeight: 150,
-      }
-    );
-    this.load.spritesheet(
-      "eye-monster-attack",
-      "assets/eye-monster-attack.png",
-      {
-        frameWidth: 150,
-        frameHeight: 150,
-      }
-    );
-    this.load.spritesheet("eye-monster-death", "assets/eye-monster-death.png", {
-      frameWidth: 150,
-      frameHeight: 150,
-    });
+    this.preloadAssets();
   }
 
   create() {
-    // Set gravity
-    this.physics.world.gravity.y = 900;
-
-    // Remove the boundaries from the right side
-    this.physics.world.setBounds(
-      0,
-      0,
-      Number.POSITIVE_INFINITY,
-      this.physics.world.bounds.height
-    );
-
-    // World building
-    this.backgroundImage = this.add.image(400, 300, "sky");
-
-    // Ground
-    this.ground = this.physics.add
-      .staticSprite(this.scale.width * 0.5, this.scale.height, "ground")
-      .setOrigin(0.5, 1)
-      .refreshBody();
-
-    // The player
-    this.player = this.physics.add.sprite(100, 450, "main-idle");
-    this.player.setBodySize(30, 55);
-    this.player.setOffset(85, 73);
-    this.player.setScale(1.5);
-    this.player.setCollideWorldBounds(true);
-
-    // Platforms
-    this.platforms = this.physics.add.staticGroup();
-    const platformCreationActions = [
-      () => {
-        this.platforms
-          .create(100, 400, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-        this.platforms
-          .create(300, 250, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-      },
-      () => {
-        this.platforms
-          .create(300, 400, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-        this.platforms
-          .create(100, 250, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-      },
-      () => {
-        this.platforms
-          .create(200, 400, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-        this.platforms
-          .create(-150, 250, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-        this.platforms
-          .create(550, 250, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-      },
-      () => {
-        this.platforms
-          .create(200, 397, "platform")
-          .setOrigin(0, 0.5)
-          .refreshBody();
-      },
-    ];
-    const randomIndex = Phaser.Math.RND.between(
-      0,
-      platformCreationActions.length - 1
-    );
-    const selectedAction = platformCreationActions[randomIndex];
-    selectedAction();
-    // this.platforms.create(400, 397, "platform").refreshBody();
-
-    // Adding physics
-    this.physics.add.collider(this.player, this.ground);
-    this.physics.add.collider(this.player, this.platforms);
-
-    this.anims.create({
-      key: "idle",
-      frames: this.anims.generateFrameNumbers("main-idle", {
-        start: 0,
-        end: 3,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "run",
-      frames: this.anims.generateFrameNumbers("main-run", {
-        start: 0,
-        end: 7,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-    this.anims.create({
-      key: "attack",
-      frames: this.anims.generateFrameNumbers("main-attack", {
-        start: 0,
-        end: 3,
-      }),
-      frameRate: 10,
-    });
-    this.anims.create({
-      key: "jump",
-      frames: this.anims.generateFrameNumbers("main-jump", {
-        start: 0,
-        end: 1,
-      }),
-      frameRate: 10,
-    });
-    this.anims.create({
-      key: "fall",
-      frames: this.anims.generateFrameNumbers("main-fall", {
-        start: 0,
-        end: 1,
-      }),
-      frameRate: 10,
-    });
-    this.anims.create({
-      key: "death",
-      frames: this.anims.generateFrameNumbers("main-death", {
-        start: 0,
-        end: 6,
-      }),
-      frameRate: 10,
-    });
-    this.anims.create({
-      key: "explosion",
-      frames: this.anims.generateFrameNumbers("explosion", {
-        start: 0,
-        end: 4,
-      }),
-      frameRate: 10,
-    });
-    this.anims.create({
-      key: "eye-monster-flight",
-      frames: this.anims.generateFrameNumbers("eye-monster-flight", {
-        start: 0,
-        end: 7,
-      }),
-      frameRate: 10,
-      repeat: -1,
-    });
-
-    // Keyboard controls
-    if (this.input && this.input.keyboard) {
-      this.cursors = this.input.keyboard.createCursorKeys();
-    } else {
-      console.error("Input or keyboard is not available");
-    }
-
-    // Scores and scoring
-    this.scoreText = this.add.text(16, 16, "Score: 0", {
-      fontSize: "32px",
-      color: "#000",
-    });
+    this.setPhysics();
+    this.createWorld();
+    this.createPlayer();
+    this.createPlatforms();
+    this.createScoreText();
+    this.createColliders();
+    this.createAnimations();
+    this.setupKeyboardControls();
+    this.setupPlayerActionKeyboardEvents();
 
     // Bouncing bombs
     this.bombs = this.physics.add.group();
@@ -275,58 +64,6 @@ export default class Demo extends Phaser.Scene {
     // flyingEyeMonster.setCollideWorldBounds(true);
     // flyingEyeMonster.anims.play("eye-monster-flight");
     // this.physics.add.collider(this.platforms, flyingEyeMonster);
-
-    // Attack on A keydown
-    this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
-      if (this.player.body.onFloor()) {
-        this.player.setVelocityX(0);
-      }
-      if (!this.isAttackPlaying) {
-        this.isAttackPlaying = true;
-        this.player.anims
-          .play("attack")
-          .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-            this.isAttackPlaying = false;
-            if (this.isRightKeyDown) {
-              this.player.setVelocityX(190);
-              this.player.setScale(1.5);
-              this.player.setOffset(85, 73);
-            } else if (this.isLeftKeyDown) {
-              this.player.setVelocityX(-190);
-              this.player.setScale(
-                -1 * Math.abs(this.player.scaleX),
-                this.player.scaleY
-              );
-              this.player.setOffset(116, 73);
-            }
-          });
-      }
-    });
-
-    this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
-      this.isLeftKeyDown = true;
-      this.player.setVelocityX(-190);
-      this.player.setScale(
-        -1 * Math.abs(this.player.scaleX),
-        this.player.scaleY
-      );
-      this.player.setOffset(116, 73);
-    });
-
-    this.input.keyboard?.on("keyup-LEFT", () => {
-      this.isLeftKeyDown = false;
-    });
-
-    this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
-      this.isRightKeyDown = true;
-      this.player.setVelocityX(190);
-      this.player.setScale(1.5);
-      this.player.setOffset(85, 73);
-    });
-
-    this.input.keyboard?.on("keyup-RIGHT", () => {
-      this.isRightKeyDown = false;
-    });
   }
 
   update() {
@@ -491,6 +228,289 @@ export default class Demo extends Phaser.Scene {
         this.player.setVelocityY(-550);
       }
     }
+  }
+
+  preloadAssets() {
+    this.load.image("logo", "assets/phaser3-logo.png");
+    this.load.image("sky", "assets/sky.png");
+    this.load.image("platform", "assets/platform.png");
+    this.load.image("tiles", "assets/tileset.png");
+    this.load.image("star", "assets/star.png");
+    this.load.image("bomb", "assets/bomb.png");
+    this.load.image("ground", "assets/ground.png");
+    this.load.spritesheet("main-idle", "assets/main-idle.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-run", "assets/main-run.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-attack", "assets/main-attack.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-jump", "assets/main-jump.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-fall", "assets/main-fall.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("main-death", "assets/main-death.png", {
+      frameWidth: 200,
+      frameHeight: 200,
+    });
+    this.load.spritesheet("explosion", "assets/explosion.png", {
+      frameWidth: 16,
+      frameHeight: 16,
+    });
+    this.load.spritesheet(
+      "eye-monster-flight",
+      "assets/eye-monster-flight.png",
+      {
+        frameWidth: 150,
+        frameHeight: 150,
+      }
+    );
+    this.load.spritesheet(
+      "eye-monster-attack",
+      "assets/eye-monster-attack.png",
+      {
+        frameWidth: 150,
+        frameHeight: 150,
+      }
+    );
+    this.load.spritesheet("eye-monster-death", "assets/eye-monster-death.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
+  }
+
+  setPhysics() {
+    this.physics.world.gravity.y = 900;
+
+    // Remove the boundaries from the right side
+    this.physics.world.setBounds(
+      0,
+      0,
+      Number.POSITIVE_INFINITY,
+      this.physics.world.bounds.height
+    );
+  }
+
+  createWorld() {
+    this.backgroundImage = this.add.image(400, 300, "sky");
+
+    this.ground = this.physics.add
+      .staticSprite(this.scale.width * 0.5, this.scale.height, "ground")
+      .setOrigin(0.5, 1)
+      .refreshBody();
+  }
+
+  createPlayer() {
+    this.player = this.physics.add.sprite(100, 450, "main-idle");
+    this.player.setBodySize(30, 55);
+    this.player.setOffset(85, 73);
+    this.player.setScale(1.5);
+    this.player.setCollideWorldBounds(true);
+  }
+
+  createPlatforms() {
+    this.platforms = this.physics.add.staticGroup();
+    const platformCreationActions = [
+      () => {
+        this.platforms
+          .create(100, 400, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(300, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+      },
+      () => {
+        this.platforms
+          .create(300, 400, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(100, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+      },
+      () => {
+        this.platforms
+          .create(200, 400, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(-150, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+        this.platforms
+          .create(550, 250, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+      },
+      () => {
+        this.platforms
+          .create(200, 397, "platform")
+          .setOrigin(0, 0.5)
+          .refreshBody();
+      },
+    ];
+    const randomIndex = Phaser.Math.RND.between(
+      0,
+      platformCreationActions.length - 1
+    );
+    const selectedAction = platformCreationActions[randomIndex];
+    selectedAction();
+  }
+
+  createScoreText() {
+    this.scoreText = this.add.text(16, 16, "Score: 0", {
+      fontSize: "32px",
+      color: "#000",
+    });
+  }
+
+  createColliders() {
+    this.physics.add.collider(this.player, this.ground);
+    this.physics.add.collider(this.player, this.platforms);
+  }
+
+  createAnimations() {
+    this.anims.create({
+      key: "idle",
+      frames: this.anims.generateFrameNumbers("main-idle", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "run",
+      frames: this.anims.generateFrameNumbers("main-run", {
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "attack",
+      frames: this.anims.generateFrameNumbers("main-attack", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "jump",
+      frames: this.anims.generateFrameNumbers("main-jump", {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "fall",
+      frames: this.anims.generateFrameNumbers("main-fall", {
+        start: 0,
+        end: 1,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "death",
+      frames: this.anims.generateFrameNumbers("main-death", {
+        start: 0,
+        end: 6,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "explosion",
+      frames: this.anims.generateFrameNumbers("explosion", {
+        start: 0,
+        end: 4,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "eye-monster-flight",
+      frames: this.anims.generateFrameNumbers("eye-monster-flight", {
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+  }
+
+  setupKeyboardControls() {
+    if (this.input && this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+    } else {
+      console.error("Input or keyboard is not available");
+    }
+  }
+
+  setupPlayerActionKeyboardEvents() {
+    // Attack on A keydown
+    this.input.keyboard?.on("keydown-A", (event: KeyboardEvent) => {
+      if (this.player.body.onFloor()) {
+        this.player.setVelocityX(0);
+      }
+      if (!this.isAttackPlaying) {
+        this.isAttackPlaying = true;
+        this.player.anims
+          .play("attack")
+          .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+            this.isAttackPlaying = false;
+            if (this.isRightKeyDown) {
+              this.player.setVelocityX(190);
+              this.player.setScale(1.5);
+              this.player.setOffset(85, 73);
+            } else if (this.isLeftKeyDown) {
+              this.player.setVelocityX(-190);
+              this.player.setScale(
+                -1 * Math.abs(this.player.scaleX),
+                this.player.scaleY
+              );
+              this.player.setOffset(116, 73);
+            }
+          });
+      }
+    });
+
+    this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
+      this.isLeftKeyDown = true;
+      this.player.setVelocityX(-190);
+      this.player.setScale(
+        -1 * Math.abs(this.player.scaleX),
+        this.player.scaleY
+      );
+      this.player.setOffset(116, 73);
+    });
+
+    this.input.keyboard?.on("keyup-LEFT", () => {
+      this.isLeftKeyDown = false;
+    });
+
+    this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
+      this.isRightKeyDown = true;
+      this.player.setVelocityX(190);
+      this.player.setScale(1.5);
+      this.player.setOffset(85, 73);
+    });
+
+    this.input.keyboard?.on("keyup-RIGHT", () => {
+      this.isRightKeyDown = false;
+    });
   }
 
   hitBomb(

@@ -14,6 +14,8 @@ export default class Demo extends Phaser.Scene {
   private isLeftKeyDown: boolean = false;
   private rightMostPlatformX: number = 0;
   private score: number = 0;
+  private bombTimer!: Phaser.Time.TimerEvent;
+  private bombInterval = 3000;
 
   constructor() {
     super("GameScene");
@@ -28,28 +30,8 @@ export default class Demo extends Phaser.Scene {
     this.createWorld();
     this.createPlayer();
     this.createPlatforms();
+    this.createBombs();
     this.createScoreText();
-    this.createColliders();
-    this.createAnimations();
-    this.setupKeyboardControls();
-    this.setupPlayerActionKeyboardEvents();
-
-    // Bouncing bombs
-    this.bombs = this.physics.add.group();
-    this.physics.add.collider(this.bombs, this.platforms);
-    this.physics.add.collider(
-      this.player,
-      this.bombs,
-      this.hitBomb,
-      undefined,
-      this
-    );
-
-    // Bombs
-    // const bomb = this.bombs.create(600, 400, "bomb");
-    // bomb.setBounce(1);
-    // bomb.setCollideWorldBounds(false);
-    // bomb.setVelocity(Phaser.Math.Between(-250, -50), 20);
 
     // Flying eye monsters
     // const flyingEyeMonster = this.physics.add.sprite(
@@ -64,6 +46,11 @@ export default class Demo extends Phaser.Scene {
     // flyingEyeMonster.setCollideWorldBounds(true);
     // flyingEyeMonster.anims.play("eye-monster-flight");
     // this.physics.add.collider(this.platforms, flyingEyeMonster);
+
+    this.createAnimations();
+    this.setupKeyboardControls();
+    this.setupPlayerActionKeyboardEvents();
+    this.createColliders();
   }
 
   update() {
@@ -192,9 +179,12 @@ export default class Demo extends Phaser.Scene {
     this.bombs.children.iterate((child: Phaser.GameObjects.GameObject) => {
       if (child instanceof Phaser.Physics.Arcade.Sprite) {
         if (typeof this.game.config.width === "number") {
-          if (child.x < this.cameras.main.scrollX) {
-            child.x =
-              this.cameras.main.scrollX + Number(this.game.config.width);
+          if (
+            child.x < this.cameras.main.scrollX ||
+            child.x >
+              this.cameras.main.scrollX + Number(this.game.config.width) + 50
+          ) {
+            child.destroy();
           }
         }
       }
@@ -302,7 +292,6 @@ export default class Demo extends Phaser.Scene {
 
   createWorld() {
     this.backgroundImage = this.add.image(400, 300, "sky");
-
     this.ground = this.physics.add
       .staticSprite(this.scale.width * 0.5, this.scale.height, "ground")
       .setOrigin(0.5, 1)
@@ -369,6 +358,11 @@ export default class Demo extends Phaser.Scene {
     selectedAction();
   }
 
+  createBombs() {
+    this.bombs = this.physics.add.group();
+    this.startBombSpawning();
+  }
+
   createScoreText() {
     this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontSize: "32px",
@@ -379,6 +373,15 @@ export default class Demo extends Phaser.Scene {
   createColliders() {
     this.physics.add.collider(this.player, this.ground);
     this.physics.add.collider(this.player, this.platforms);
+    this.physics.add.collider(this.bombs, this.platforms);
+    this.physics.add.collider(this.bombs, this.ground);
+    this.physics.add.collider(
+      this.player,
+      this.bombs,
+      this.hitBomb,
+      undefined,
+      this
+    );
   }
 
   createAnimations() {
@@ -513,6 +516,34 @@ export default class Demo extends Phaser.Scene {
     });
   }
 
+  createBomb() {
+    const bomb = this.bombs.create(
+      this.cameras.main.scrollX + Number(this.game.config.width) + 5,
+      Phaser.Math.Between(50, Number(this.game.config.height) - 100),
+      "bomb"
+    );
+    bomb.setBounce(1);
+    bomb.setVelocity(
+      Phaser.Math.Between(-400, -100),
+      Phaser.Math.Between(-400, -100)
+    );
+  }
+
+  startBombSpawning() {
+    this.bombTimer = this.time.addEvent({
+      delay: this.bombInterval,
+      callback: this.createBomb,
+      callbackScope: this,
+      loop: true,
+    });
+  }
+
+  stopBombSpawning() {
+    if (this.bombTimer) {
+      this.bombTimer.destroy();
+    }
+  }
+
   hitBomb(
     player:
       | Phaser.Types.Physics.Arcade.GameObjectWithBody
@@ -531,5 +562,6 @@ export default class Demo extends Phaser.Scene {
     playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
+    this.stopBombSpawning();
   }
 }

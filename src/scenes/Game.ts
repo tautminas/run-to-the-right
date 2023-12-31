@@ -15,7 +15,7 @@ export default class Demo extends Phaser.Scene {
   private rightMostPlatformX: number = 0;
   private score: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
-  private bombInterval = 3000;
+  private bombInterval = 60000;
 
   constructor() {
     super("GameScene");
@@ -34,18 +34,17 @@ export default class Demo extends Phaser.Scene {
     this.createScoreText();
 
     // Flying eye monsters
-    // const flyingEyeMonster = this.physics.add.sprite(
-    //   600,
-    //   450,
-    //   "eye-monster-flight"
-    // );
-    // flyingEyeMonster.setBodySize(45, 45);
-    // flyingEyeMonster.setOffset(100, 60);
-    // flyingEyeMonster.setScale(-1.5, 1.5);
-    // flyingEyeMonster.setBounce(0.2);
-    // flyingEyeMonster.setCollideWorldBounds(true);
-    // flyingEyeMonster.anims.play("eye-monster-flight");
-    // this.physics.add.collider(this.platforms, flyingEyeMonster);
+    const flyingEyeMonster = this.physics.add.sprite(
+      600,
+      450,
+      "eye-monster-flight"
+    );
+    flyingEyeMonster.setBodySize(45, 45);
+    flyingEyeMonster.setOffset(100, 60);
+    flyingEyeMonster.setScale(-1.5, 1.5);
+    flyingEyeMonster.setCollideWorldBounds(true);
+    flyingEyeMonster.anims.play("eye-monster-flight");
+    this.physics.add.collider(this.ground, flyingEyeMonster);
 
     this.createAnimations();
     this.setupKeyboardControls();
@@ -221,7 +220,6 @@ export default class Demo extends Phaser.Scene {
   }
 
   preloadAssets() {
-    this.load.image("logo", "assets/phaser3-logo.png");
     this.load.image("sky", "assets/sky.png");
     this.load.image("platform", "assets/platform.png");
     this.load.image("tiles", "assets/tileset.png");

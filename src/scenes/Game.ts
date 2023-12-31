@@ -6,6 +6,7 @@ export default class Demo extends Phaser.Scene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private scoreText!: Phaser.GameObjects.Text;
   private bombs!: Phaser.Physics.Arcade.Group;
+  private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private ground!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
@@ -15,7 +16,9 @@ export default class Demo extends Phaser.Scene {
   private rightMostPlatformX: number = 0;
   private score: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
-  private bombInterval = 60000;
+  private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
+  private bombInterval: number = 60000;
+  private flyingEyeMonsterInterval: number = 4000;
 
   constructor() {
     super("GameScene");
@@ -33,18 +36,19 @@ export default class Demo extends Phaser.Scene {
     this.createBombs();
     this.createScoreText();
 
+    this.createFlyingEyeMonsters();
     // Flying eye monsters
-    const flyingEyeMonster = this.physics.add.sprite(
-      600,
-      450,
-      "eye-monster-flight"
-    );
-    flyingEyeMonster.setBodySize(45, 45);
-    flyingEyeMonster.setOffset(100, 60);
-    flyingEyeMonster.setScale(-1.5, 1.5);
-    flyingEyeMonster.setCollideWorldBounds(true);
-    flyingEyeMonster.anims.play("eye-monster-flight");
-    this.physics.add.collider(this.ground, flyingEyeMonster);
+    // const flyingEyeMonster = this.physics.add.sprite(
+    //   600,
+    //   450,
+    //   "eye-monster-flight"
+    // );
+    // flyingEyeMonster.setBodySize(45, 45);
+    // flyingEyeMonster.setOffset(100, 60);
+    // flyingEyeMonster.setScale(-1.5, 1.5);
+    // flyingEyeMonster.setCollideWorldBounds(true);
+    // flyingEyeMonster.anims.play("eye-monster-flight");
+    // this.physics.add.collider(this.ground, flyingEyeMonster);
 
     this.createAnimations();
     this.setupKeyboardControls();
@@ -190,6 +194,23 @@ export default class Demo extends Phaser.Scene {
       return true;
     });
 
+    this.flyingEyeMonsters.children.iterate(
+      (child: Phaser.GameObjects.GameObject) => {
+        if (child instanceof Phaser.Physics.Arcade.Sprite) {
+          if (typeof this.game.config.width === "number") {
+            if (
+              child.x < this.cameras.main.scrollX ||
+              child.x >
+                this.cameras.main.scrollX + Number(this.game.config.width) + 50
+            ) {
+              child.destroy();
+            }
+          }
+        }
+        return true;
+      }
+    );
+
     // Disallow player to move beyond left edge
     const leftEdge = this.cameras.main.scrollX;
     if (playerX < leftEdge) {
@@ -222,8 +243,6 @@ export default class Demo extends Phaser.Scene {
   preloadAssets() {
     this.load.image("sky", "assets/sky.png");
     this.load.image("platform", "assets/platform.png");
-    this.load.image("tiles", "assets/tileset.png");
-    this.load.image("star", "assets/star.png");
     this.load.image("bomb", "assets/bomb.png");
     this.load.image("ground", "assets/ground.png");
     this.load.spritesheet("main-idle", "assets/main-idle.png", {
@@ -356,6 +375,40 @@ export default class Demo extends Phaser.Scene {
     selectedAction();
   }
 
+  createFlyingEyeMonsters() {
+    this.flyingEyeMonsters = this.physics.add.group();
+    this.startFlyingEyeMonsterSpawning();
+  }
+
+  createFlyingEyeMonster() {
+    const flyingEyeMonster = this.flyingEyeMonsters.create(
+      800,
+      400,
+      "eye-monster-flight"
+    );
+    flyingEyeMonster.setBodySize(45, 45);
+    flyingEyeMonster.setOffset(100, 60);
+    flyingEyeMonster.setScale(-1.5, 1.5);
+    flyingEyeMonster.setCollideWorldBounds(true);
+    flyingEyeMonster.anims.play("eye-monster-flight");
+    flyingEyeMonster.setVelocityX(-100);
+  }
+
+  startFlyingEyeMonsterSpawning() {
+    this.flyingEyeMonsterTimer = this.time.addEvent({
+      delay: this.flyingEyeMonsterInterval,
+      callback: this.createFlyingEyeMonster,
+      callbackScope: this,
+      loop: true,
+    });
+  }
+
+  stopFlyingEyeMonsterSpawning() {
+    if (this.flyingEyeMonsterTimer) {
+      this.flyingEyeMonsterTimer.destroy();
+    }
+  }
+
   createBombs() {
     this.bombs = this.physics.add.group();
     this.startBombSpawning();
@@ -377,6 +430,14 @@ export default class Demo extends Phaser.Scene {
       this.player,
       this.bombs,
       this.hitBomb,
+      undefined,
+      this
+    );
+    this.physics.add.collider(this.flyingEyeMonsters, this.ground);
+    this.physics.add.collider(
+      this.player,
+      this.flyingEyeMonsters,
+      this.hitFlyingEyeMonster,
       undefined,
       this
     );
@@ -449,6 +510,14 @@ export default class Demo extends Phaser.Scene {
       }),
       frameRate: 10,
       repeat: -1,
+    });
+    this.anims.create({
+      key: "eye-monster-attack",
+      frames: this.anims.generateFrameNumbers("eye-monster-attack", {
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
     });
   }
 
@@ -561,5 +630,29 @@ export default class Demo extends Phaser.Scene {
     this.physics.resume();
     this.gameOver = true;
     this.stopBombSpawning();
+  }
+
+  hitFlyingEyeMonster(
+    player:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    flyingEyeMonster:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
+  ) {
+    const playerSprite = player as Phaser.Physics.Arcade.Sprite;
+    const flyingEyeMonsterSprite =
+      flyingEyeMonster as Phaser.Physics.Arcade.Sprite;
+    flyingEyeMonsterSprite.anims
+      .play("eye-monster-attack")
+      .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        flyingEyeMonster.play("eye-monster-flight");
+      });
+    playerSprite.anims.play("death");
+    playerSprite.setVelocityX(0);
+    playerSprite.setVelocityY(130);
+    this.physics.resume();
+    this.gameOver = true;
+    this.stopFlyingEyeMonsterSpawning();
   }
 }

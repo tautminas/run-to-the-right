@@ -19,6 +19,7 @@ export default class Demo extends Phaser.Scene {
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
   private bombInterval: number = 60000;
   private flyingEyeMonsterInterval: number = 4000;
+  private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
 
   constructor() {
     super("GameScene");
@@ -389,7 +390,6 @@ export default class Demo extends Phaser.Scene {
     flyingEyeMonster.setBodySize(45, 45);
     flyingEyeMonster.setOffset(100, 60);
     flyingEyeMonster.setScale(-1.5, 1.5);
-    flyingEyeMonster.setCollideWorldBounds(true);
     flyingEyeMonster.anims.play("eye-monster-flight");
     flyingEyeMonster.setVelocityX(-100);
   }
@@ -434,7 +434,7 @@ export default class Demo extends Phaser.Scene {
       this
     );
     this.physics.add.collider(this.flyingEyeMonsters, this.ground);
-    this.physics.add.collider(
+    this.eyeMonstersCollider = this.physics.add.collider(
       this.player,
       this.flyingEyeMonsters,
       this.hitFlyingEyeMonster,
@@ -643,16 +643,18 @@ export default class Demo extends Phaser.Scene {
     const playerSprite = player as Phaser.Physics.Arcade.Sprite;
     const flyingEyeMonsterSprite =
       flyingEyeMonster as Phaser.Physics.Arcade.Sprite;
+    playerSprite.anims.play("death");
+    playerSprite.setVelocityX(0);
+    playerSprite.setVelocityY(130);
+    flyingEyeMonsterSprite.setVelocityX(-100);
     flyingEyeMonsterSprite.anims
       .play("eye-monster-attack")
       .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
         flyingEyeMonster.play("eye-monster-flight");
       });
-    playerSprite.anims.play("death");
-    playerSprite.setVelocityX(0);
-    playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
     this.stopFlyingEyeMonsterSpawning();
+    this.eyeMonstersCollider.destroy();
   }
 }

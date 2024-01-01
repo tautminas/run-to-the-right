@@ -18,9 +18,10 @@ export default class Demo extends Phaser.Scene {
   private bombTimer!: Phaser.Time.TimerEvent;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
   private bombInterval: number = 60000;
-  private flyingEyeMonsterInterval: number = 3000;
+  private flyingEyeMonsterInterval: number = 60000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
+  private attackHitbox!: Phaser.Physics.Arcade.Sprite;
 
   constructor() {
     super("GameScene");
@@ -42,10 +43,45 @@ export default class Demo extends Phaser.Scene {
     this.setupKeyboardControls();
     this.setupPlayerActionKeyboardEvents();
     this.createColliders();
+
+    this.attackHitbox = this.physics.add
+      .sprite(400, 400, "invisibleSprite")
+      .setOrigin(0, 0.5);
+    this.attackHitbox.setVisible(false); // Set the sprite as invisible
+    this.attackHitbox.setDisplaySize(100, 95);
+    // this.attackHitbox.body.allowGravity = false;
+    if (this.attackHitbox && this.attackHitbox.body) {
+      this.attackHitbox.body.setAllowGravity(false);
+    }
   }
 
   update() {
     if (!this.player || !this.cursors || this.gameOver) return;
+
+    const isPlayerAttacking =
+      this.player.anims.currentAnim?.key === "attack" &&
+      this.player.anims.isPlaying;
+    if (isPlayerAttacking) {
+      if (this.attackHitbox && this.attackHitbox.body) {
+        this.attackHitbox.body.enable = true;
+      }
+      const playerXVelocity = this.player.body.velocity.x;
+      if (playerXVelocity === 0) {
+        if (this.isLeftKeyDown) {
+          this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
+        } else {
+          this.attackHitbox.setPosition(this.player.x + 24, this.player.y);
+        }
+      } else if (playerXVelocity > 0) {
+        this.attackHitbox.setPosition(this.player.x + 24, this.player.y);
+      } else {
+        this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
+      }
+    } else {
+      if (this.attackHitbox && this.attackHitbox.body) {
+        this.attackHitbox.body.enable = false;
+      }
+    }
 
     // Move camera to the right
     const centerX = this.cameras.main.width / 2;

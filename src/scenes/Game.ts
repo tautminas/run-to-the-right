@@ -18,10 +18,11 @@ export default class Demo extends Phaser.Scene {
   private bombTimer!: Phaser.Time.TimerEvent;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
   private bombInterval: number = 60000;
-  private flyingEyeMonsterInterval: number = 60000;
+  private flyingEyeMonsterInterval: number = 3000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
   private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
+  private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
 
   constructor() {
     super("GameScene");
@@ -76,10 +77,20 @@ export default class Demo extends Phaser.Scene {
           this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
         }
       }
+      this.attackCollider = this.physics.add.overlap(
+        this.attackHitbox,
+        this.flyingEyeMonsters,
+        this.attackFlyingEyeMonster,
+        undefined,
+        this
+      );
     } else {
       if (this.attackHitbox) {
         this.attackHitbox.destroy();
         this.attackHitbox = null;
+      }
+      if (this.attackCollider) {
+        this.attackCollider = null;
       }
     }
 
@@ -684,5 +695,16 @@ export default class Demo extends Phaser.Scene {
     this.stopBombSpawning();
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
+  }
+
+  attackFlyingEyeMonster(
+    attack:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    flyingEyeMonster:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
+  ) {
+    console.log("Attack!");
   }
 }

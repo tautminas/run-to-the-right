@@ -21,7 +21,7 @@ export default class Demo extends Phaser.Scene {
   private flyingEyeMonsterInterval: number = 60000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
-  private attackHitbox!: Phaser.Physics.Arcade.Sprite;
+  private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
 
   constructor() {
     super("GameScene");
@@ -43,16 +43,6 @@ export default class Demo extends Phaser.Scene {
     this.setupKeyboardControls();
     this.setupPlayerActionKeyboardEvents();
     this.createColliders();
-
-    this.attackHitbox = this.physics.add
-      .sprite(400, 400, "invisibleSprite")
-      .setOrigin(0, 0.5);
-    this.attackHitbox.setVisible(false); // Set the sprite as invisible
-    this.attackHitbox.setDisplaySize(100, 95);
-    if (this.attackHitbox && this.attackHitbox.body) {
-      // this.attackHitbox.body.allowGravity = false;
-      this.attackHitbox.body.setAllowGravity(false);
-    }
   }
 
   update() {
@@ -62,8 +52,16 @@ export default class Demo extends Phaser.Scene {
       this.player.anims.currentAnim?.key === "attack" &&
       this.player.anims.isPlaying;
     if (isPlayerAttacking) {
-      if (this.attackHitbox && this.attackHitbox.body) {
-        this.attackHitbox.body.enable = true;
+      if (!this.attackHitbox) {
+        this.attackHitbox = this.physics.add
+          .sprite(400, 400, "invisibleSprite")
+          .setOrigin(0, 0.5);
+        this.attackHitbox.setVisible(false);
+        this.attackHitbox.setDisplaySize(100, 95);
+        if (this.attackHitbox.body) {
+          this.attackHitbox.body.setAllowGravity(false);
+          this.attackHitbox.body.enable = true;
+        }
       }
       if (this.player.scaleX > 0) {
         if (this.player.body.velocity.x !== 0) {
@@ -79,8 +77,9 @@ export default class Demo extends Phaser.Scene {
         }
       }
     } else {
-      if (this.attackHitbox && this.attackHitbox.body) {
-        this.attackHitbox.body.enable = false;
+      if (this.attackHitbox) {
+        this.attackHitbox.destroy();
+        this.attackHitbox = null;
       }
     }
 

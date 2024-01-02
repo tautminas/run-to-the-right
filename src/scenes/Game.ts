@@ -49,8 +49,8 @@ export default class Demo extends Phaser.Scene {
       .setOrigin(0, 0.5);
     this.attackHitbox.setVisible(false); // Set the sprite as invisible
     this.attackHitbox.setDisplaySize(100, 95);
-    // this.attackHitbox.body.allowGravity = false;
     if (this.attackHitbox && this.attackHitbox.body) {
+      // this.attackHitbox.body.allowGravity = false;
       this.attackHitbox.body.setAllowGravity(false);
     }
   }
@@ -65,17 +65,18 @@ export default class Demo extends Phaser.Scene {
       if (this.attackHitbox && this.attackHitbox.body) {
         this.attackHitbox.body.enable = true;
       }
-      const playerXVelocity = this.player.body.velocity.x;
-      if (playerXVelocity === 0) {
-        if (this.isLeftKeyDown) {
-          this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
+      if (this.player.scaleX > 0) {
+        if (this.player.body.velocity.x !== 0) {
+          this.attackHitbox.setPosition(this.player.x + 30, this.player.y);
         } else {
           this.attackHitbox.setPosition(this.player.x + 24, this.player.y);
         }
-      } else if (playerXVelocity > 0) {
-        this.attackHitbox.setPosition(this.player.x + 24, this.player.y);
       } else {
-        this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
+        if (this.player.body.velocity.x !== 0) {
+          this.attackHitbox.setPosition(this.player.x - 130, this.player.y);
+        } else {
+          this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
+        }
       }
     } else {
       if (this.attackHitbox && this.attackHitbox.body) {

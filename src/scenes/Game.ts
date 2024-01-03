@@ -553,6 +553,14 @@ export default class Demo extends Phaser.Scene {
       }),
       frameRate: 10,
     });
+    this.anims.create({
+      key: "eye-monster-death",
+      frames: this.anims.generateFrameNumbers("eye-monster-death", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
+    });
   }
 
   setupKeyboardControls() {
@@ -705,6 +713,15 @@ export default class Demo extends Phaser.Scene {
       | Phaser.Types.Physics.Arcade.GameObjectWithBody
       | Phaser.Tilemaps.Tile
   ) {
-    console.log("Attack!");
+    const attackSprite = attack as Phaser.Physics.Arcade.Sprite;
+    const flyingEyeMonsterSprite =
+      flyingEyeMonster as Phaser.Physics.Arcade.Sprite;
+    this.flyingEyeMonsters.remove(flyingEyeMonsterSprite);
+    this.physics.add.collider(this.ground, flyingEyeMonsterSprite);
+    flyingEyeMonsterSprite.anims
+      .play("eye-monster-death")
+      .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        flyingEyeMonsterSprite.destroy();
+      });
   }
 }

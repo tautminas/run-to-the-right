@@ -17,15 +17,15 @@ export default class Demo extends Phaser.Scene {
   private score: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
-  private bombInterval: number = 600_000;
-  private flyingEyeMonsterInterval: number = 600_000;
+  private bombInterval: number = 6_000;
+  private flyingEyeMonsterInterval: number = 3_000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
   private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
   private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
 
   private skeletons!: Phaser.Physics.Arcade.Group;
-  private skeletonsInterval: number = 1_000;
+  private skeletonsInterval: number = 4_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
   private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
 
@@ -442,15 +442,16 @@ export default class Demo extends Phaser.Scene {
 
   createFlyingEyeMonster() {
     const flyingEyeMonster = this.flyingEyeMonsters.create(
-      this.cameras.main.scrollX + Number(this.game.config.width) + 10,
-      485,
+      this.cameras.main.scrollX + Number(this.game.config.width) + 40,
+      325,
       "eye-monster-flight"
     );
-    flyingEyeMonster.setBodySize(45, 45);
+    flyingEyeMonster.setBodySize(44, 35);
     flyingEyeMonster.setOffset(100, 60);
     flyingEyeMonster.setScale(-1.5, 1.5);
     flyingEyeMonster.anims.play("eye-monster-flight");
     flyingEyeMonster.setVelocityX(-100);
+    flyingEyeMonster.body.allowGravity = false;
   }
 
   startFlyingEyeMonsterSpawning() {
@@ -767,6 +768,7 @@ export default class Demo extends Phaser.Scene {
     this.stopBombSpawning();
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
+    this.skeletonsCollider.destroy();
   }
 
   hitFlyingEyeMonster(
@@ -795,6 +797,7 @@ export default class Demo extends Phaser.Scene {
     this.stopBombSpawning();
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
+    this.skeletonsCollider.destroy();
   }
 
   hitSkeleton(

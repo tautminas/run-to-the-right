@@ -90,6 +90,13 @@ export default class Demo extends Phaser.Scene {
         undefined,
         this
       );
+      this.attackCollider = this.physics.add.overlap(
+        this.attackHitbox,
+        this.skeletons,
+        this.attackSkeleton,
+        undefined,
+        this
+      );
     } else {
       if (this.attackHitbox) {
         this.attackHitbox.destroy();
@@ -468,8 +475,8 @@ export default class Demo extends Phaser.Scene {
 
   createSkeleton() {
     const skeleton = this.skeletons.create(
-      this.cameras.main.scrollX + Number(this.game.config.width) + 10,
-      300,
+      this.cameras.main.scrollX + Number(this.game.config.width) + 45,
+      492,
       "skeleton-walk"
     );
     skeleton.setBodySize(45, 50);
@@ -836,6 +843,25 @@ export default class Demo extends Phaser.Scene {
       .play("eye-monster-death")
       .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
         flyingEyeMonsterSprite.destroy();
+      });
+  }
+
+  attackSkeleton(
+    attack:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    skeleton:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
+  ) {
+    const attackSprite = attack as Phaser.Physics.Arcade.Sprite;
+    const sleletonSprite = skeleton as Phaser.Physics.Arcade.Sprite;
+    this.skeletons.remove(sleletonSprite);
+    this.physics.add.collider(this.ground, sleletonSprite);
+    sleletonSprite.anims
+      .play("skeleton-death")
+      .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        sleletonSprite.destroy();
       });
   }
 }

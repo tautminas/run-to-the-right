@@ -17,12 +17,17 @@ export default class Demo extends Phaser.Scene {
   private score: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
-  private bombInterval: number = 60000;
-  private flyingEyeMonsterInterval: number = 3000;
+  private bombInterval: number = 600_000;
+  private flyingEyeMonsterInterval: number = 600_000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
   private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
   private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
+
+  private skeletons!: Phaser.Physics.Arcade.Group;
+  private skeletonsInterval: number = 3_000;
+  private skeletonTimer!: Phaser.Time.TimerEvent;
+  // private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
 
   constructor() {
     super("GameScene");
@@ -38,6 +43,7 @@ export default class Demo extends Phaser.Scene {
     this.createPlayer();
     this.createPlatforms();
     this.createBombs();
+    this.createSkeletons();
     this.createScoreText();
     this.createFlyingEyeMonsters();
     this.createAnimations();
@@ -328,6 +334,18 @@ export default class Demo extends Phaser.Scene {
       frameWidth: 150,
       frameHeight: 150,
     });
+    this.load.spritesheet("skeleton-walk", "assets/skeleton-walk.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
+    this.load.spritesheet("skeleton-attack", "assets/skeleton-attack.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
+    this.load.spritesheet("skeleton-death", "assets/skeleton-death.png", {
+      frameWidth: 150,
+      frameHeight: 150,
+    });
   }
 
   setPhysics() {
@@ -448,6 +466,19 @@ export default class Demo extends Phaser.Scene {
     this.startBombSpawning();
   }
 
+  createSkeleton() {
+    const skeleton = this.skeletons.create(
+      this.cameras.main.scrollX + Number(this.game.config.width) + 10,
+      485,
+      "skeleton-walk"
+    );
+    skeleton.setBodySize(45, 45);
+    skeleton.setOffset(100, 60);
+    skeleton.setScale(-1.5, 1.5);
+    skeleton.anims.play("skeleton-walk");
+    skeleton.setVelocityX(-100);
+  }
+
   createScoreText() {
     this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontSize: "32px",
@@ -460,6 +491,7 @@ export default class Demo extends Phaser.Scene {
     this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.bombs, this.platforms);
     this.physics.add.collider(this.bombs, this.ground);
+    this.physics.add.collider(this.skeletons, this.ground);
     this.bombsCollider = this.physics.add.collider(
       this.player,
       this.bombs,
@@ -561,6 +593,32 @@ export default class Demo extends Phaser.Scene {
       }),
       frameRate: 10,
     });
+    //
+    this.anims.create({
+      key: "skeleton-walk",
+      frames: this.anims.generateFrameNumbers("skeleton-walk", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
+      repeat: -1,
+    });
+    this.anims.create({
+      key: "skeleton-attack",
+      frames: this.anims.generateFrameNumbers("skeleton-attack", {
+        start: 0,
+        end: 7,
+      }),
+      frameRate: 10,
+    });
+    this.anims.create({
+      key: "skeleton-death",
+      frames: this.anims.generateFrameNumbers("skeleton-death", {
+        start: 0,
+        end: 3,
+      }),
+      frameRate: 10,
+    });
   }
 
   setupKeyboardControls() {
@@ -650,6 +708,26 @@ export default class Demo extends Phaser.Scene {
   stopBombSpawning() {
     if (this.bombTimer) {
       this.bombTimer.destroy();
+    }
+  }
+
+  createSkeletons() {
+    this.skeletons = this.physics.add.group();
+    this.startSkeletonSpawning();
+  }
+
+  startSkeletonSpawning() {
+    this.skeletonTimer = this.time.addEvent({
+      delay: this.skeletonsInterval,
+      callback: this.createSkeleton,
+      callbackScope: this,
+      loop: true,
+    });
+  }
+
+  stopSkeletonSpawning() {
+    if (this.skeletonTimer) {
+      this.skeletonTimer.destroy();
     }
   }
 

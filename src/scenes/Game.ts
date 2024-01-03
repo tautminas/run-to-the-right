@@ -25,7 +25,7 @@ export default class Demo extends Phaser.Scene {
   private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
 
   private skeletons!: Phaser.Physics.Arcade.Group;
-  private skeletonsInterval: number = 3_000;
+  private skeletonsInterval: number = 1_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
   // private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
 
@@ -469,11 +469,11 @@ export default class Demo extends Phaser.Scene {
   createSkeleton() {
     const skeleton = this.skeletons.create(
       this.cameras.main.scrollX + Number(this.game.config.width) + 10,
-      485,
+      300,
       "skeleton-walk"
     );
-    skeleton.setBodySize(45, 45);
-    skeleton.setOffset(100, 60);
+    skeleton.setBodySize(45, 50);
+    skeleton.setOffset(105, 50);
     skeleton.setScale(-1.5, 1.5);
     skeleton.anims.play("skeleton-walk");
     skeleton.setVelocityX(-100);

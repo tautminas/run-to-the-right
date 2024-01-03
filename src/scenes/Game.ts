@@ -27,7 +27,7 @@ export default class Demo extends Phaser.Scene {
   private skeletons!: Phaser.Physics.Arcade.Group;
   private skeletonsInterval: number = 1_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
-  // private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
+  private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
 
   constructor() {
     super("GameScene");
@@ -488,10 +488,11 @@ export default class Demo extends Phaser.Scene {
 
   createColliders() {
     this.physics.add.collider(this.player, this.ground);
-    this.physics.add.collider(this.player, this.platforms);
     this.physics.add.collider(this.bombs, this.platforms);
     this.physics.add.collider(this.bombs, this.ground);
+    this.physics.add.collider(this.flyingEyeMonsters, this.ground);
     this.physics.add.collider(this.skeletons, this.ground);
+    this.physics.add.collider(this.player, this.platforms);
     this.bombsCollider = this.physics.add.collider(
       this.player,
       this.bombs,
@@ -499,11 +500,17 @@ export default class Demo extends Phaser.Scene {
       undefined,
       this
     );
-    this.physics.add.collider(this.flyingEyeMonsters, this.ground);
     this.eyeMonstersCollider = this.physics.add.collider(
       this.player,
       this.flyingEyeMonsters,
       this.hitFlyingEyeMonster,
+      undefined,
+      this
+    );
+    this.skeletonsCollider = this.physics.add.collider(
+      this.player,
+      this.skeletons,
+      this.hitSkeleton,
       undefined,
       this
     );
@@ -781,6 +788,35 @@ export default class Demo extends Phaser.Scene {
     this.stopBombSpawning();
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
+  }
+
+  hitSkeleton(
+    player:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile,
+    skeleton:
+      | Phaser.Types.Physics.Arcade.GameObjectWithBody
+      | Phaser.Tilemaps.Tile
+  ) {
+    const playerSprite = player as Phaser.Physics.Arcade.Sprite;
+    const skeletonSprite = skeleton as Phaser.Physics.Arcade.Sprite;
+    playerSprite.anims.play("death");
+    playerSprite.setVelocityX(0);
+    playerSprite.setVelocityY(130);
+    skeletonSprite.setVelocityX(-100);
+    skeletonSprite.anims
+      .play("skeleton-attack")
+      .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
+        skeletonSprite.play("skeleton-walk");
+      });
+    this.physics.resume();
+    this.gameOver = true;
+    this.stopSkeletonSpawning();
+    this.stopFlyingEyeMonsterSpawning();
+    this.stopBombSpawning();
+    this.bombsCollider.destroy();
+    this.eyeMonstersCollider.destroy();
+    this.skeletonsCollider.destroy();
   }
 
   attackFlyingEyeMonster(

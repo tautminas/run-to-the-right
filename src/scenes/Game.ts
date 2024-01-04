@@ -469,11 +469,6 @@ export default class Demo extends Phaser.Scene {
     }
   }
 
-  createBombs() {
-    this.bombs = this.physics.add.group();
-    this.startBombSpawning();
-  }
-
   createSkeleton() {
     const skeleton = this.skeletons.create(
       this.cameras.main.scrollX + Number(this.game.config.width) + 45,
@@ -698,7 +693,14 @@ export default class Demo extends Phaser.Scene {
     });
   }
 
+  createBombs() {
+    this.bombs = this.physics.add.group();
+    this.createBomb();
+  }
+
   createBomb() {
+    const bombInterval = Phaser.Math.Between(1000, 6000);
+    console.log(bombInterval);
     const bomb = this.bombs.create(
       this.cameras.main.scrollX + Number(this.game.config.width) + 5,
       Phaser.Math.Between(50, Number(this.game.config.height) - 100),
@@ -709,14 +711,12 @@ export default class Demo extends Phaser.Scene {
       Phaser.Math.Between(-400, -100),
       Phaser.Math.Between(-400, -100)
     );
-  }
 
-  startBombSpawning() {
     this.bombTimer = this.time.addEvent({
-      delay: this.bombInterval,
+      delay: bombInterval,
       callback: this.createBomb,
       callbackScope: this,
-      loop: true,
+      loop: false,
     });
   }
 

@@ -42,6 +42,7 @@ export default class Demo extends Phaser.Scene {
     this.createWorld();
     this.createPlayer();
     this.createPlatforms();
+    this.bombs = this.physics.add.group();
     this.createBombs();
     this.createSkeletons();
     this.createScoreText();
@@ -694,11 +695,6 @@ export default class Demo extends Phaser.Scene {
   }
 
   createBombs() {
-    this.bombs = this.physics.add.group();
-    this.createBomb();
-  }
-
-  createBomb() {
     const bombInterval = Phaser.Math.Between(1000, 6000);
     console.log(bombInterval);
     const bomb = this.bombs.create(
@@ -714,7 +710,7 @@ export default class Demo extends Phaser.Scene {
 
     this.bombTimer = this.time.addEvent({
       delay: bombInterval,
-      callback: this.createBomb,
+      callback: this.createBombs,
       callbackScope: this,
       loop: false,
     });

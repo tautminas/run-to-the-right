@@ -18,21 +18,21 @@ export default class Demo extends Phaser.Scene {
   private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private numberOfFlyingEyeMonsters: number = 0;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
-  private flyingEyeMonsterIntervalLowerBound: number = 1_000;
-  private flyingEyeMonsterIntervalUpperBound: number = 6_000;
+  private flyingEyeMonsterIntervalLowerBound: number = 10_000;
+  private flyingEyeMonsterIntervalUpperBound: number = 60_000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
 
   private bombs!: Phaser.Physics.Arcade.Group;
   private numberOfBombs: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
-  private bombIntervalLowerBound: number = 1_000;
-  private bombIntervalUpperBound: number = 6_000;
+  private bombIntervalLowerBound: number = 10_000;
+  private bombIntervalUpperBound: number = 60_000;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
 
   private skeletons!: Phaser.Physics.Arcade.Group;
   private numberOfSkeletons: number = 0;
-  private skeletonsIntervalLowerBound: number = 1_000;
-  private skeletonsIntervalUpperBound: number = 6_000;
+  private skeletonsIntervalLowerBound: number = 10_000;
+  private skeletonsIntervalUpperBound: number = 60_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
   private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
 
@@ -886,8 +886,14 @@ export default class Demo extends Phaser.Scene {
   blockPlayerAccessOutOffBounds() {
     // Disallow player to move beyond left edge
     const leftEdge = this.cameras.main.scrollX;
-    if (this.player.x < leftEdge) {
-      this.player.x = leftEdge;
+    if (leftEdge === 0) {
+      if (this.player.x < leftEdge) {
+        this.player.x = leftEdge;
+      }
+    } else {
+      if (this.player.x < leftEdge + 28) {
+        this.player.x = leftEdge + 28;
+      }
     }
   }
 

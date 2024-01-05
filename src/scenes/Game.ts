@@ -5,8 +5,6 @@ export default class Demo extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private scoreText!: Phaser.GameObjects.Text;
-  private bombs!: Phaser.Physics.Arcade.Group;
-  private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private ground!: Phaser.Physics.Arcade.Image;
   private backgroundImage!: Phaser.GameObjects.Image;
   private gameOver: boolean = false;
@@ -15,19 +13,30 @@ export default class Demo extends Phaser.Scene {
   private isLeftKeyDown: boolean = false;
   private rightMostPlatformX: number = 0;
   private score: number = 0;
-  private bombTimer!: Phaser.Time.TimerEvent;
+
+  private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
-  private bombInterval: number = 6_000;
+  private flyingEyeMonsterIntervalLowerBound: number = 1_000;
+  private flyingEyeMonsterIntervalUpperBound: number = 6_000;
   private flyingEyeMonsterInterval: number = 3_000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
+
+  private bombs!: Phaser.Physics.Arcade.Group;
+  private numberOfBombs: number = -1;
+  private bombTimer!: Phaser.Time.TimerEvent;
+  private bombIntervalLowerBound: number = 1_000;
+  private bombIntervalUpperBound: number = 6_000;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
-  private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
-  private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
 
   private skeletons!: Phaser.Physics.Arcade.Group;
-  private skeletonsInterval: number = 4_000;
+  private numberOfSkeletons: number = -1;
+  private skeletonsIntervalLowerBound: number = 1_000;
+  private skeletonsIntervalUpperBound: number = 6_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
   private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
+
+  private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
+  private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
 
   constructor() {
     super("GameScene");
@@ -38,16 +47,18 @@ export default class Demo extends Phaser.Scene {
   }
 
   create() {
+    this.bombs = this.physics.add.group();
+    this.skeletons = this.physics.add.group();
+
     this.setPhysics();
+    this.createAnimations();
     this.createWorld();
     this.createPlayer();
     this.createPlatforms();
-    this.bombs = this.physics.add.group();
     this.createBombs();
     this.createSkeletons();
     this.createScoreText();
     this.createFlyingEyeMonsters();
-    this.createAnimations();
     this.setupKeyboardControls();
     this.setupPlayerActionKeyboardEvents();
     this.createColliders();
@@ -470,19 +481,6 @@ export default class Demo extends Phaser.Scene {
     }
   }
 
-  createSkeleton() {
-    const skeleton = this.skeletons.create(
-      this.cameras.main.scrollX + Number(this.game.config.width) + 45,
-      492,
-      "skeleton-walk"
-    );
-    skeleton.setBodySize(45, 50);
-    skeleton.setOffset(105, 50);
-    skeleton.setScale(-1.5, 1.5);
-    skeleton.anims.play("skeleton-walk");
-    skeleton.setVelocityX(-100);
-  }
-
   createScoreText() {
     this.scoreText = this.add.text(16, 16, "Score: 0", {
       fontSize: "32px",
@@ -695,18 +693,24 @@ export default class Demo extends Phaser.Scene {
   }
 
   createBombs() {
-    const bombInterval = Phaser.Math.Between(1000, 6000);
-    console.log(bombInterval);
-    const bomb = this.bombs.create(
-      this.cameras.main.scrollX + Number(this.game.config.width) + 5,
-      Phaser.Math.Between(50, Number(this.game.config.height) - 100),
-      "bomb"
+    const bombInterval = Phaser.Math.Between(
+      this.bombIntervalLowerBound,
+      this.bombIntervalUpperBound
     );
-    bomb.setBounce(1);
-    bomb.setVelocity(
-      Phaser.Math.Between(-400, -100),
-      Phaser.Math.Between(-400, -100)
-    );
+    console.log("Bomb timer:", bombInterval);
+    this.numberOfBombs++;
+    if (this.numberOfBombs > 0) {
+      const bomb = this.bombs.create(
+        this.cameras.main.scrollX + Number(this.game.config.width) + 5,
+        Phaser.Math.Between(50, Number(this.game.config.height) - 100),
+        "bomb"
+      );
+      bomb.setBounce(1);
+      bomb.setVelocity(
+        Phaser.Math.Between(-400, -100),
+        Phaser.Math.Between(-400, -100)
+      );
+    }
 
     this.bombTimer = this.time.addEvent({
       delay: bombInterval,
@@ -723,16 +727,30 @@ export default class Demo extends Phaser.Scene {
   }
 
   createSkeletons() {
-    this.skeletons = this.physics.add.group();
-    this.startSkeletonSpawning();
-  }
+    const skeletonInterval = Phaser.Math.Between(
+      this.skeletonsIntervalLowerBound,
+      this.skeletonsIntervalUpperBound
+    );
+    console.log("Skeleton timer:", skeletonInterval);
+    this.numberOfSkeletons++;
+    if (this.numberOfSkeletons > 0) {
+      const skeleton = this.skeletons.create(
+        this.cameras.main.scrollX + Number(this.game.config.width) + 45,
+        492,
+        "skeleton-walk"
+      );
+      skeleton.setBodySize(45, 50);
+      skeleton.setOffset(105, 50);
+      skeleton.setScale(-1.5, 1.5);
+      skeleton.anims.play("skeleton-walk");
+      skeleton.setVelocityX(-100);
+    }
 
-  startSkeletonSpawning() {
     this.skeletonTimer = this.time.addEvent({
-      delay: this.skeletonsInterval,
-      callback: this.createSkeleton,
+      delay: skeletonInterval,
+      callback: this.createSkeletons,
       callbackScope: this,
-      loop: true,
+      loop: false,
     });
   }
 
@@ -760,6 +778,7 @@ export default class Demo extends Phaser.Scene {
     playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
+    this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
     this.bombsCollider.destroy();
@@ -789,6 +808,7 @@ export default class Demo extends Phaser.Scene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
     this.bombsCollider.destroy();

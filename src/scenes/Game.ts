@@ -67,238 +67,14 @@ export default class Demo extends Phaser.Scene {
 
   update() {
     if (!this.player || !this.cursors || this.gameOver) return;
-
-    const isPlayerAttacking =
-      this.player.anims.currentAnim?.key === "attack" &&
-      this.player.anims.isPlaying;
-    if (isPlayerAttacking) {
-      if (!this.attackHitbox) {
-        this.attackHitbox = this.physics.add
-          .sprite(400, 400, "invisibleSprite")
-          .setOrigin(0, 0.5);
-        this.attackHitbox.setVisible(false);
-        this.attackHitbox.setDisplaySize(100, 95);
-        if (this.attackHitbox.body) {
-          this.attackHitbox.body.setAllowGravity(false);
-          this.attackHitbox.body.enable = true;
-        }
-      }
-      if (this.player.scaleX > 0) {
-        if (this.player.body.velocity.x !== 0) {
-          this.attackHitbox.setPosition(this.player.x + 30, this.player.y);
-        } else {
-          this.attackHitbox.setPosition(this.player.x + 24, this.player.y);
-        }
-      } else {
-        if (this.player.body.velocity.x !== 0) {
-          this.attackHitbox.setPosition(this.player.x - 130, this.player.y);
-        } else {
-          this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
-        }
-      }
-      this.attackCollider = this.physics.add.overlap(
-        this.attackHitbox,
-        this.flyingEyeMonsters,
-        this.attackFlyingEyeMonster,
-        undefined,
-        this
-      );
-      this.attackCollider = this.physics.add.overlap(
-        this.attackHitbox,
-        this.skeletons,
-        this.attackSkeleton,
-        undefined,
-        this
-      );
-    } else {
-      if (this.attackHitbox) {
-        this.attackHitbox.destroy();
-        this.attackHitbox = null;
-      }
-      if (this.attackCollider) {
-        this.attackCollider = null;
-      }
-    }
-
-    // Move camera to the right
-    const centerX = this.cameras.main.width / 2;
-    const playerX = this.player.x;
-    if (playerX > this.cameras.main.scrollX + centerX) {
-      // Camera
-      this.cameras.main.scrollX = playerX - centerX;
-      // Background
-      this.backgroundImage.x = playerX;
-      // Platform
-      this.ground.x = this.cameras.main.scrollX + centerX;
-      if (this.ground && this.ground.body) {
-        this.ground.body.updateFromGameObject();
-      }
-      // Score text
-      this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
-      this.score = Math.round(this.cameras.main.scrollX / 10);
-      this.scoreText.setText("Score: " + this.score);
-    }
-
-    this.platforms
-      .getChildren()
-      .forEach((platform: Phaser.GameObjects.GameObject) => {
-        const platformSprite = platform as Phaser.Physics.Arcade.Sprite;
-
-        const platformRightX = platformSprite.x + platformSprite.displayWidth;
-
-        if (platformRightX > this.rightMostPlatformX) {
-          this.rightMostPlatformX = platformRightX;
-        }
-
-        if (platformRightX < this.cameras.main.scrollX) {
-          platform.destroy();
-        }
-      });
-
-    const screenThresholdX =
-      this.cameras.main.scrollX + this.cameras.main.width * 0.8;
-    if (this.rightMostPlatformX < screenThresholdX) {
-      const platformCreationActions = [
-        () => {
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width,
-              400,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width + 200,
-              250,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-        },
-        () => {
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width + 200,
-              400,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width,
-              250,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-        },
-        () => {
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width + 350,
-              400,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width,
-              250,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width + 700,
-              250,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-        },
-        () => {
-          this.platforms
-            .create(
-              this.cameras.main.scrollX + this.scale.width,
-              397,
-              "platform"
-            )
-            .setOrigin(0, 0.5)
-            .refreshBody();
-        },
-      ];
-      const randomIndex = Phaser.Math.RND.between(
-        0,
-        platformCreationActions.length - 1
-      );
-      const selectedAction = platformCreationActions[randomIndex];
-      selectedAction();
-    }
-
-    this.bombs.children.iterate((child: Phaser.GameObjects.GameObject) => {
-      if (child instanceof Phaser.Physics.Arcade.Sprite) {
-        if (typeof this.game.config.width === "number") {
-          if (
-            child.x < this.cameras.main.scrollX ||
-            child.x >
-              this.cameras.main.scrollX + Number(this.game.config.width) + 50
-          ) {
-            child.destroy();
-          }
-        }
-      }
-      return true;
-    });
-
-    this.flyingEyeMonsters.children.iterate(
-      (child: Phaser.GameObjects.GameObject) => {
-        if (child instanceof Phaser.Physics.Arcade.Sprite) {
-          if (typeof this.game.config.width === "number") {
-            if (
-              child.x < this.cameras.main.scrollX ||
-              child.x >
-                this.cameras.main.scrollX + Number(this.game.config.width) + 50
-            ) {
-              child.destroy();
-            }
-          }
-        }
-        return true;
-      }
-    );
-
-    // Disallow player to move beyond left edge
-    const leftEdge = this.cameras.main.scrollX;
-    if (playerX < leftEdge) {
-      this.player.x = leftEdge;
-    }
-
-    // Player animations
-    if (!this.isAttackPlaying) {
-      if (!this.player.body.touching.down) {
-        if (this.player.body.velocity.y < 0) {
-          this.player.anims.play("jump", true);
-        } else {
-          this.player.anims.play("fall", true);
-        }
-      } else if (this.cursors.left.isDown || this.cursors.right.isDown) {
-        this.player.anims.play("run", true);
-      } else {
-        this.player.setVelocityX(0);
-        this.player.setScale(1.5);
-        this.player.setOffset(85, 73);
-        this.player.anims.play("idle", true);
-      }
-
-      if (this.cursors.up?.isDown && this.player.body.touching.down) {
-        this.player.setVelocityY(-550);
-      }
-    }
+    this.handlePlayerAttack();
+    this.moveCameraToTheRight();
+    this.destroyOutOfBoundsPlatforms();
+    this.createNewPlatforms();
+    this.destroyOutOfBoundsBombs();
+    this.destroyOutOfBoundsflyingEyeMonsters();
+    this.blockPlayerAccessOutOffBounds();
+    this.handlePlayerAnimations();
   }
 
   preloadAssets() {
@@ -888,5 +664,252 @@ export default class Demo extends Phaser.Scene {
       .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
         sleletonSprite.destroy();
       });
+  }
+
+  handlePlayerAttack() {
+    const isPlayerAttacking =
+      this.player.anims.currentAnim?.key === "attack" &&
+      this.player.anims.isPlaying;
+    if (isPlayerAttacking) {
+      if (!this.attackHitbox) {
+        this.attackHitbox = this.physics.add
+          .sprite(400, 400, "invisibleSprite")
+          .setOrigin(0, 0.5);
+        this.attackHitbox.setVisible(false);
+        this.attackHitbox.setDisplaySize(100, 95);
+        if (this.attackHitbox.body) {
+          this.attackHitbox.body.setAllowGravity(false);
+          this.attackHitbox.body.enable = true;
+        }
+      }
+      if (this.player.scaleX > 0) {
+        if (this.player.body.velocity.x !== 0) {
+          this.attackHitbox.setPosition(this.player.x + 30, this.player.y);
+        } else {
+          this.attackHitbox.setPosition(this.player.x + 24, this.player.y);
+        }
+      } else {
+        if (this.player.body.velocity.x !== 0) {
+          this.attackHitbox.setPosition(this.player.x - 130, this.player.y);
+        } else {
+          this.attackHitbox.setPosition(this.player.x - 124, this.player.y);
+        }
+      }
+      this.attackCollider = this.physics.add.overlap(
+        this.attackHitbox,
+        this.flyingEyeMonsters,
+        this.attackFlyingEyeMonster,
+        undefined,
+        this
+      );
+      this.attackCollider = this.physics.add.overlap(
+        this.attackHitbox,
+        this.skeletons,
+        this.attackSkeleton,
+        undefined,
+        this
+      );
+    } else {
+      if (this.attackHitbox) {
+        this.attackHitbox.destroy();
+        this.attackHitbox = null;
+      }
+      if (this.attackCollider) {
+        this.attackCollider = null;
+      }
+    }
+  }
+
+  moveCameraToTheRight() {
+    const centerX = this.cameras.main.width / 2;
+    const playerX = this.player.x;
+    if (playerX > this.cameras.main.scrollX + centerX) {
+      // Camera
+      this.cameras.main.scrollX = playerX - centerX;
+      // Background
+      this.backgroundImage.x = playerX;
+      // Ground
+      this.ground.x = this.cameras.main.scrollX + centerX;
+      if (this.ground && this.ground.body) {
+        this.ground.body.updateFromGameObject();
+      }
+      // Score text
+      this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
+      this.score = Math.round(this.cameras.main.scrollX / 10);
+      this.scoreText.setText("Score: " + this.score);
+    }
+  }
+
+  destroyOutOfBoundsPlatforms() {
+    this.platforms
+      .getChildren()
+      .forEach((platform: Phaser.GameObjects.GameObject) => {
+        const platformSprite = platform as Phaser.Physics.Arcade.Sprite;
+
+        const platformRightX = platformSprite.x + platformSprite.displayWidth;
+
+        if (platformRightX > this.rightMostPlatformX) {
+          this.rightMostPlatformX = platformRightX;
+        }
+
+        if (platformRightX < this.cameras.main.scrollX) {
+          platform.destroy();
+        }
+      });
+  }
+
+  createNewPlatforms() {
+    const screenThresholdX =
+      this.cameras.main.scrollX + this.cameras.main.width * 0.8;
+    if (this.rightMostPlatformX < screenThresholdX) {
+      const platformCreationActions = [
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              400,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 200,
+              250,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+        },
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 200,
+              400,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              250,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+        },
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 350,
+              400,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              250,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width + 700,
+              250,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+        },
+        () => {
+          this.platforms
+            .create(
+              this.cameras.main.scrollX + this.scale.width,
+              397,
+              "platform"
+            )
+            .setOrigin(0, 0.5)
+            .refreshBody();
+        },
+      ];
+      const randomIndex = Phaser.Math.RND.between(
+        0,
+        platformCreationActions.length - 1
+      );
+      const selectedAction = platformCreationActions[randomIndex];
+      selectedAction();
+    }
+  }
+
+  destroyOutOfBoundsBombs() {
+    this.bombs.children.iterate((child: Phaser.GameObjects.GameObject) => {
+      if (child instanceof Phaser.Physics.Arcade.Sprite) {
+        if (typeof this.game.config.width === "number") {
+          if (
+            child.x < this.cameras.main.scrollX ||
+            child.x >
+              this.cameras.main.scrollX + Number(this.game.config.width) + 50
+          ) {
+            child.destroy();
+          }
+        }
+      }
+      return true;
+    });
+  }
+
+  destroyOutOfBoundsflyingEyeMonsters() {
+    this.flyingEyeMonsters.children.iterate(
+      (child: Phaser.GameObjects.GameObject) => {
+        if (child instanceof Phaser.Physics.Arcade.Sprite) {
+          if (typeof this.game.config.width === "number") {
+            if (
+              child.x < this.cameras.main.scrollX ||
+              child.x >
+                this.cameras.main.scrollX + Number(this.game.config.width) + 50
+            ) {
+              child.destroy();
+            }
+          }
+        }
+        return true;
+      }
+    );
+  }
+
+  blockPlayerAccessOutOffBounds() {
+    // Disallow player to move beyond left edge
+    const leftEdge = this.cameras.main.scrollX;
+    if (this.player.x < leftEdge) {
+      this.player.x = leftEdge;
+    }
+  }
+
+  handlePlayerAnimations() {
+    // Player animations
+    if (!this.isAttackPlaying) {
+      if (!this.player.body.touching.down) {
+        if (this.player.body.velocity.y < 0) {
+          this.player.anims.play("jump", true);
+        } else {
+          this.player.anims.play("fall", true);
+        }
+      } else if (this.cursors.left.isDown || this.cursors.right.isDown) {
+        this.player.anims.play("run", true);
+      } else {
+        this.player.setVelocityX(0);
+        this.player.setScale(1.5);
+        this.player.setOffset(85, 73);
+        this.player.anims.play("idle", true);
+      }
+
+      if (this.cursors.up?.isDown && this.player.body.touching.down) {
+        this.player.setVelocityY(-550);
+      }
+    }
   }
 }

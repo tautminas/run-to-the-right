@@ -74,7 +74,7 @@ export default class Demo extends Phaser.Scene {
     this.destroyOutOfBoundsBombs();
     this.destroyOutOfBoundsflyingEyeMonsters();
     this.blockPlayerAccessOutOffBounds();
-    this.handlePlayerAnimations();
+    this.handlePlayerAnimationsAndMovements();
   }
 
   preloadAssets() {
@@ -415,6 +415,7 @@ export default class Demo extends Phaser.Scene {
 
     this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
       this.isLeftKeyDown = true;
+      this.isRightKeyDown = false;
       this.player.setVelocityX(-190);
       this.player.setScale(
         -1 * Math.abs(this.player.scaleX),
@@ -429,6 +430,7 @@ export default class Demo extends Phaser.Scene {
 
     this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
       this.isRightKeyDown = true;
+      this.isLeftKeyDown = false;
       this.player.setVelocityX(190);
       this.player.setScale(1.5);
       this.player.setOffset(85, 73);
@@ -889,8 +891,7 @@ export default class Demo extends Phaser.Scene {
     }
   }
 
-  handlePlayerAnimations() {
-    // Player animations
+  handlePlayerAnimationsAndMovements() {
     if (!this.isAttackPlaying) {
       if (!this.player.body.touching.down) {
         if (this.player.body.velocity.y < 0) {
@@ -909,6 +910,12 @@ export default class Demo extends Phaser.Scene {
 
       if (this.cursors.up?.isDown && this.player.body.touching.down) {
         this.player.setVelocityY(-550);
+      }
+
+      if (this.isRightKeyDown && this.player.body.onFloor()) {
+        this.player.setVelocityX(190);
+      } else if (this.isLeftKeyDown && this.player.body.onFloor()) {
+        this.player.setVelocityX(-190);
       }
     }
   }

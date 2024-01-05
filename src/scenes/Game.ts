@@ -675,7 +675,7 @@ export default class Demo extends Phaser.Scene {
     if (isPlayerAttacking) {
       if (!this.attackHitbox) {
         this.attackHitbox = this.physics.add
-          .sprite(400, 400, "invisibleSprite")
+          .sprite(this.player.x, 900, "invisibleSprite")
           .setOrigin(0, 0.5);
         this.attackHitbox.setVisible(false);
         this.attackHitbox.setDisplaySize(100, 95);

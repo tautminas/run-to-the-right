@@ -12,8 +12,6 @@ export default class Demo extends Phaser.Scene {
   private score: number = 0;
 
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private isRightKeyDown: boolean = false;
-  private isLeftKeyDown: boolean = false;
 
   private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private numberOfFlyingEyeMonsters: number = 0;
@@ -398,11 +396,11 @@ export default class Demo extends Phaser.Scene {
           .play("attack")
           .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
             this.isAttackPlaying = false;
-            if (this.isRightKeyDown) {
+            if (this.cursors.right.isDown) {
               this.player.setVelocityX(190);
               this.player.setScale(1.5);
               this.player.setOffset(85, 73);
-            } else if (this.isLeftKeyDown) {
+            } else if (this.cursors.left.isDown) {
               this.player.setVelocityX(-190);
               this.player.setScale(
                 -1 * Math.abs(this.player.scaleX),
@@ -415,8 +413,6 @@ export default class Demo extends Phaser.Scene {
     });
 
     this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
-      this.isLeftKeyDown = true;
-      this.isRightKeyDown = false;
       if (this.gameOver) return;
       this.player.setVelocityX(-190);
       this.player.setScale(
@@ -426,21 +422,11 @@ export default class Demo extends Phaser.Scene {
       this.player.setOffset(116, 73);
     });
 
-    this.input.keyboard?.on("keyup-LEFT", () => {
-      this.isLeftKeyDown = false;
-    });
-
     this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
-      this.isRightKeyDown = true;
-      this.isLeftKeyDown = false;
       if (this.gameOver) return;
       this.player.setVelocityX(190);
       this.player.setScale(1.5);
       this.player.setOffset(85, 73);
-    });
-
-    this.input.keyboard?.on("keyup-RIGHT", () => {
-      this.isRightKeyDown = false;
     });
   }
 
@@ -906,14 +892,24 @@ export default class Demo extends Phaser.Scene {
   }
 
   handlePlayerAnimationsAndMovements() {
-    if (!this.isAttackPlaying) {
-      if (!this.player.body.touching.down) {
-        if (this.player.body.velocity.y < 0) {
-          this.player.anims.play("jump", true);
-        } else {
-          this.player.anims.play("fall", true);
-        }
+    if (this.isAttackPlaying) return;
+    if (this.player.body.onFloor()) {
+      if (this.cursors.up?.isDown) {
+        this.player.setVelocityY(-550);
       } else if (this.cursors.left.isDown || this.cursors.right.isDown) {
+        if (this.cursors.right.isDown && !this.cursors.left.isDown) {
+          if (this.gameOver) return;
+          this.player.setVelocityX(190);
+          this.player.setScale(1.5);
+          this.player.setOffset(85, 73);
+        } else if (this.cursors.left.isDown && !this.cursors.right.isDown) {
+          this.player.setVelocityX(-190);
+          this.player.setScale(
+            -1 * Math.abs(this.player.scaleX),
+            this.player.scaleY
+          );
+          this.player.setOffset(116, 73);
+        }
         this.player.anims.play("run", true);
       } else {
         this.player.setVelocityX(0);
@@ -921,15 +917,11 @@ export default class Demo extends Phaser.Scene {
         this.player.setOffset(85, 73);
         this.player.anims.play("idle", true);
       }
-
-      if (this.cursors.up?.isDown && this.player.body.touching.down) {
-        this.player.setVelocityY(-550);
-      }
-
-      if (this.isRightKeyDown && this.player.body.onFloor()) {
-        this.player.setVelocityX(190);
-      } else if (this.isLeftKeyDown && this.player.body.onFloor()) {
-        this.player.setVelocityX(-190);
+    } else {
+      if (this.player.body.velocity.y < 0) {
+        this.player.anims.play("jump", true);
+      } else {
+        this.player.anims.play("fall", true);
       }
     }
   }

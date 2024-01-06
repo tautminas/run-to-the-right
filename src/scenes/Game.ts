@@ -391,6 +391,7 @@ export default class Demo extends Phaser.Scene {
       if (this.player.body.onFloor()) {
         this.player.setVelocityX(0);
       }
+      if (this.gameOver) return;
       if (!this.isAttackPlaying) {
         this.isAttackPlaying = true;
         this.player.anims
@@ -416,6 +417,7 @@ export default class Demo extends Phaser.Scene {
     this.input.keyboard?.on("keydown-LEFT", (event: KeyboardEvent) => {
       this.isLeftKeyDown = true;
       this.isRightKeyDown = false;
+      if (this.gameOver) return;
       this.player.setVelocityX(-190);
       this.player.setScale(
         -1 * Math.abs(this.player.scaleX),
@@ -431,6 +433,7 @@ export default class Demo extends Phaser.Scene {
     this.input.keyboard?.on("keydown-RIGHT", (event: KeyboardEvent) => {
       this.isRightKeyDown = true;
       this.isLeftKeyDown = false;
+      if (this.gameOver) return;
       this.player.setVelocityX(190);
       this.player.setScale(1.5);
       this.player.setOffset(85, 73);

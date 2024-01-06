@@ -592,7 +592,7 @@ export default class Demo extends Phaser.Scene {
     flyingEyeMonsterSprite.anims
       .play("eye-monster-attack")
       .once(Phaser.Animations.Events.ANIMATION_COMPLETE, () => {
-        flyingEyeMonster.play("eye-monster-flight");
+        flyingEyeMonsterSprite.anims.play("eye-monster-flight");
       });
     this.physics.resume();
     this.gameOver = true;
@@ -644,7 +644,9 @@ export default class Demo extends Phaser.Scene {
     const attackSprite = attack as Phaser.Physics.Arcade.Sprite;
     const flyingEyeMonsterSprite =
       flyingEyeMonster as Phaser.Physics.Arcade.Sprite;
-    flyingEyeMonster.body.allowGravity = true;
+    if (flyingEyeMonsterSprite.body instanceof Phaser.Physics.Arcade.Body) {
+      flyingEyeMonsterSprite.body.setAllowGravity(true);
+    }
     this.flyingEyeMonsters.remove(flyingEyeMonsterSprite);
     this.physics.add.collider(this.platforms, flyingEyeMonsterSprite);
     this.physics.add.collider(this.ground, flyingEyeMonsterSprite);
@@ -685,7 +687,7 @@ export default class Demo extends Phaser.Scene {
           .setOrigin(0, 0.5);
         this.attackHitbox.setVisible(false);
         this.attackHitbox.setDisplaySize(100, 95);
-        if (this.attackHitbox.body) {
+        if (this.attackHitbox.body instanceof Phaser.Physics.Arcade.Body) {
           this.attackHitbox.body.setAllowGravity(false);
           this.attackHitbox.body.enable = true;
         }

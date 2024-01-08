@@ -233,14 +233,16 @@ export default class Demo extends Phaser.Scene {
 
   createScoreText() {
     this.scoreText = this.add.text(16, 16, "Score: 0", {
-      fontSize: "32px",
+      fontFamily: "'Roboto Mono', monospace",
+      fontSize: "36px",
       color: "#000",
     });
     this.bestScoreText = this.add.text(
       16,
-      52,
+      58,
       `Best score: ${this.bestScore}`,
       {
+        fontFamily: "'Roboto Mono', monospace",
         fontSize: "18px",
         color: "#000",
       }
@@ -751,7 +753,7 @@ export default class Demo extends Phaser.Scene {
       this.score = Math.round(this.cameras.main.scrollX / 10);
       this.scoreText.setText("Score: " + this.score);
       // Best score text
-      this.bestScoreText.setPosition(this.cameras.main.scrollX + 16, 52);
+      this.bestScoreText.setPosition(this.cameras.main.scrollX + 16, 58);
     }
   }
 

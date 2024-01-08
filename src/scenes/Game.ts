@@ -568,6 +568,7 @@ export default class Demo extends Phaser.Scene {
     playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
+    this.attackHitbox?.destroy();
     this.updateBestScore();
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
@@ -600,6 +601,7 @@ export default class Demo extends Phaser.Scene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.attackHitbox?.destroy();
     this.updateBestScore();
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
@@ -630,6 +632,7 @@ export default class Demo extends Phaser.Scene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.attackHitbox?.destroy();
     this.updateBestScore();
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();

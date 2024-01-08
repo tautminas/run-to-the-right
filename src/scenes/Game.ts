@@ -10,7 +10,12 @@ export default class Demo extends Phaser.Scene {
 
   private scoreText!: Phaser.GameObjects.Text;
   private score: number = 0;
-
+  private bestScoreText!: Phaser.GameObjects.Text;
+  private bestScore: number = isNaN(
+    parseInt(localStorage.getItem("bestScore") || "", 10)
+  )
+    ? 0
+    : parseInt(localStorage.getItem("bestScore") || "", 10);
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
 
   private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
@@ -231,6 +236,15 @@ export default class Demo extends Phaser.Scene {
       fontSize: "32px",
       color: "#000",
     });
+    this.bestScoreText = this.add.text(
+      16,
+      52,
+      `Best score: ${this.bestScore}`,
+      {
+        fontSize: "18px",
+        color: "#000",
+      }
+    );
   }
 
   createColliders() {
@@ -551,6 +565,7 @@ export default class Demo extends Phaser.Scene {
     playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
+    this.updateBestScore();
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
@@ -582,6 +597,7 @@ export default class Demo extends Phaser.Scene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.updateBestScore();
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
@@ -611,6 +627,7 @@ export default class Demo extends Phaser.Scene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.updateBestScore();
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
@@ -733,6 +750,8 @@ export default class Demo extends Phaser.Scene {
       this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
       this.score = Math.round(this.cameras.main.scrollX / 10);
       this.scoreText.setText("Score: " + this.score);
+      // Best score text
+      this.bestScoreText.setPosition(this.cameras.main.scrollX + 16, 52);
     }
   }
 
@@ -923,6 +942,13 @@ export default class Demo extends Phaser.Scene {
       } else {
         this.player.anims.play("fall", true);
       }
+    }
+  }
+
+  updateBestScore() {
+    if (this.score > this.bestScore) {
+      localStorage.setItem("bestScore", String(this.score));
+      this.bestScoreText.setText("Best score: " + this.score);
     }
   }
 }

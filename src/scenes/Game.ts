@@ -21,21 +21,21 @@ export default class Demo extends Phaser.Scene {
   private flyingEyeMonsters!: Phaser.Physics.Arcade.Group;
   private numberOfFlyingEyeMonsters: number = 0;
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
-  private flyingEyeMonsterIntervalLowerBound: number = 1_000;
-  private flyingEyeMonsterIntervalUpperBound: number = 6_000;
+  private flyingEyeMonsterIntervalLowerBound: number = 2_000;
+  private flyingEyeMonsterIntervalUpperBound: number = 8_000;
   private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
 
   private bombs!: Phaser.Physics.Arcade.Group;
   private numberOfBombs: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
-  private bombIntervalLowerBound: number = 10_000;
-  private bombIntervalUpperBound: number = 60_000;
+  private bombIntervalLowerBound: number = 2_000;
+  private bombIntervalUpperBound: number = 8_000;
   private bombsCollider!: Phaser.Physics.Arcade.Collider;
 
   private skeletons!: Phaser.Physics.Arcade.Group;
   private numberOfSkeletons: number = 0;
-  private skeletonsIntervalLowerBound: number = 10_000;
-  private skeletonsIntervalUpperBound: number = 60_000;
+  private skeletonsIntervalLowerBound: number = 2_000;
+  private skeletonsIntervalUpperBound: number = 8_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
   private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
 
@@ -78,6 +78,7 @@ export default class Demo extends Phaser.Scene {
     this.destroyOutOfBoundsflyingEyeMonsters();
     this.blockPlayerAccessOutOffBounds();
     this.handlePlayerAnimationsAndMovements();
+    this.updateDifficulty();
   }
 
   preloadAssets() {
@@ -944,6 +945,107 @@ export default class Demo extends Phaser.Scene {
       } else {
         this.player.anims.play("fall", true);
       }
+    }
+  }
+
+  updateDifficulty() {
+    switch (this.score) {
+      case 250:
+        this.flyingEyeMonsterIntervalLowerBound = 2_000;
+        this.flyingEyeMonsterIntervalUpperBound = 7_000;
+        this.bombIntervalLowerBound = 2_000;
+        this.bombIntervalUpperBound = 7_000;
+        this.skeletonsIntervalLowerBound = 2_000;
+        this.skeletonsIntervalUpperBound = 7_000;
+        break;
+      case 500:
+        this.flyingEyeMonsterIntervalLowerBound = 2_000;
+        this.flyingEyeMonsterIntervalUpperBound = 6_000;
+        this.bombIntervalLowerBound = 2_000;
+        this.bombIntervalUpperBound = 6_000;
+        this.skeletonsIntervalLowerBound = 2_000;
+        this.skeletonsIntervalUpperBound = 6_000;
+        break;
+      case 750:
+        this.flyingEyeMonsterIntervalLowerBound = 2_000;
+        this.flyingEyeMonsterIntervalUpperBound = 5_000;
+        this.bombIntervalLowerBound = 2_000;
+        this.bombIntervalUpperBound = 5_000;
+        this.skeletonsIntervalLowerBound = 2_000;
+        this.skeletonsIntervalUpperBound = 5_000;
+        break;
+      case 1000:
+        this.flyingEyeMonsterIntervalLowerBound = 2_000;
+        this.flyingEyeMonsterIntervalUpperBound = 4_000;
+        this.bombIntervalLowerBound = 2_000;
+        this.bombIntervalUpperBound = 4_000;
+        this.skeletonsIntervalLowerBound = 2_000;
+        this.skeletonsIntervalUpperBound = 4_000;
+        break;
+      case 1250:
+        this.flyingEyeMonsterIntervalLowerBound = 1_500;
+        this.flyingEyeMonsterIntervalUpperBound = 4_000;
+        this.bombIntervalLowerBound = 1_500;
+        this.bombIntervalUpperBound = 4_000;
+        this.skeletonsIntervalLowerBound = 1_500;
+        this.skeletonsIntervalUpperBound = 4_000;
+        break;
+      case 1500:
+        this.flyingEyeMonsterIntervalLowerBound = 1_500;
+        this.flyingEyeMonsterIntervalUpperBound = 3_000;
+        this.bombIntervalLowerBound = 1_500;
+        this.bombIntervalUpperBound = 3_000;
+        this.skeletonsIntervalLowerBound = 1_500;
+        this.skeletonsIntervalUpperBound = 3_000;
+        break;
+      case 1750:
+        this.flyingEyeMonsterIntervalLowerBound = 1_000;
+        this.flyingEyeMonsterIntervalUpperBound = 3_000;
+        this.bombIntervalLowerBound = 1_000;
+        this.bombIntervalUpperBound = 3_000;
+        this.skeletonsIntervalLowerBound = 1_000;
+        this.skeletonsIntervalUpperBound = 3_000;
+        break;
+      case 2000:
+        this.flyingEyeMonsterIntervalLowerBound = 1_000;
+        this.flyingEyeMonsterIntervalUpperBound = 2_000;
+        this.bombIntervalLowerBound = 1_000;
+        this.bombIntervalUpperBound = 2_000;
+        this.skeletonsIntervalLowerBound = 1_000;
+        this.skeletonsIntervalUpperBound = 2_000;
+        break;
+      case 2250:
+        this.flyingEyeMonsterIntervalLowerBound = 1_000;
+        this.flyingEyeMonsterIntervalUpperBound = 2_000;
+        this.bombIntervalLowerBound = 1_000;
+        this.bombIntervalUpperBound = 2_000;
+        this.skeletonsIntervalLowerBound = 1_000;
+        this.skeletonsIntervalUpperBound = 2_000;
+        break;
+      case 2500:
+        this.flyingEyeMonsterIntervalLowerBound = 1_000;
+        this.flyingEyeMonsterIntervalUpperBound = 2_000;
+        this.bombIntervalLowerBound = 750;
+        this.bombIntervalUpperBound = 1_500;
+        this.skeletonsIntervalLowerBound = 1_000;
+        this.skeletonsIntervalUpperBound = 2_000;
+        break;
+      case 2750:
+        this.flyingEyeMonsterIntervalLowerBound = 1_000;
+        this.flyingEyeMonsterIntervalUpperBound = 2_000;
+        this.bombIntervalLowerBound = 750;
+        this.bombIntervalUpperBound = 1_000;
+        this.skeletonsIntervalLowerBound = 1_000;
+        this.skeletonsIntervalUpperBound = 2_000;
+        break;
+      case 3000:
+        this.flyingEyeMonsterIntervalLowerBound = 1_000;
+        this.flyingEyeMonsterIntervalUpperBound = 2_000;
+        this.bombIntervalLowerBound = 500;
+        this.bombIntervalUpperBound = 1_000;
+        this.skeletonsIntervalLowerBound = 1_000;
+        this.skeletonsIntervalUpperBound = 2_000;
+        break;
     }
   }
 

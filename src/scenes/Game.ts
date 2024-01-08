@@ -3,7 +3,6 @@ import * as Phaser from "phaser";
 export default class Demo extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private ground!: Phaser.Physics.Arcade.Image;
-  private backgroundImage!: Phaser.GameObjects.Image;
 
   private platforms!: Phaser.Physics.Arcade.StaticGroup;
   private rightMostPlatformX: number = 0;
@@ -62,6 +61,7 @@ export default class Demo extends Phaser.Scene {
     this.createBombs();
     this.createSkeletons();
     this.createScoreText();
+    this.createPause();
     this.createFlyingEyeMonsters();
     this.setupKeyboardControls();
     this.setupPlayerActionKeyboardEvents();
@@ -86,6 +86,7 @@ export default class Demo extends Phaser.Scene {
     this.load.image("platform", "assets/platform.png");
     this.load.image("bomb", "assets/bomb.png");
     this.load.image("ground", "assets/ground.png");
+    this.load.image("pause", "assets/pause.png");
     this.load.spritesheet("main-idle", "assets/main-idle.png", {
       frameWidth: 200,
       frameHeight: 200,
@@ -165,7 +166,7 @@ export default class Demo extends Phaser.Scene {
   }
 
   createWorld() {
-    this.backgroundImage = this.add.image(400, 300, "sky");
+    this.add.image(400, 300, "sky").setScrollFactor(0);
     this.ground = this.physics.add
       .staticSprite(this.scale.width * 0.5, this.scale.height, "ground")
       .setOrigin(0.5, 1)
@@ -233,21 +234,32 @@ export default class Demo extends Phaser.Scene {
   }
 
   createScoreText() {
-    this.scoreText = this.add.text(16, 16, "Score: 0", {
-      fontFamily: "'Roboto Mono', monospace",
-      fontSize: "36px",
-      color: "#000",
-    });
-    this.bestScoreText = this.add.text(
-      16,
-      58,
-      `Best score: ${this.bestScore}`,
-      {
+    this.scoreText = this.add
+      .text(16, 16, "Score: 0", {
+        fontFamily: "'Roboto Mono', monospace",
+        fontSize: "36px",
+        color: "#000",
+      })
+      .setScrollFactor(0);
+    this.bestScoreText = this.add
+      .text(16, 58, `Best score: ${this.bestScore}`, {
         fontFamily: "'Roboto Mono', monospace",
         fontSize: "18px",
         color: "#000",
-      }
-    );
+      })
+      .setScrollFactor(0);
+  }
+
+  createPause() {
+    this.add
+      .image(
+        Number(this.game.config.width) - 10,
+        Number(this.game.config.height) - 10,
+        "pause"
+      )
+      .setOrigin(1, 1)
+      .setScale(2.5)
+      .setScrollFactor(0);
   }
 
   createColliders() {
@@ -745,19 +757,14 @@ export default class Demo extends Phaser.Scene {
     if (playerX > this.cameras.main.scrollX + centerX) {
       // Camera
       this.cameras.main.scrollX = playerX - centerX;
-      // Background
-      this.backgroundImage.x = playerX;
       // Ground
       this.ground.x = this.cameras.main.scrollX + centerX;
       if (this.ground && this.ground.body) {
         this.ground.body.updateFromGameObject();
       }
       // Score text
-      this.scoreText.setPosition(this.cameras.main.scrollX + 16, 16);
       this.score = Math.round(this.cameras.main.scrollX / 10);
       this.scoreText.setText("Score: " + this.score);
-      // Best score text
-      this.bestScoreText.setPosition(this.cameras.main.scrollX + 16, 58);
     }
   }
 

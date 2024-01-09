@@ -42,6 +42,8 @@ export default class Demo extends Phaser.Scene {
   private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
   private attackCollider: Phaser.Physics.Arcade.Collider | null = null;
 
+  private pauseButton!: Phaser.GameObjects.Image;
+
   private gameOver: boolean = false;
 
   constructor() {
@@ -251,15 +253,20 @@ export default class Demo extends Phaser.Scene {
   }
 
   createPause() {
-    this.add
+    this.pauseButton = this.add
       .image(
         Number(this.game.config.width) - 10,
         Number(this.game.config.height) - 10,
         "pause"
       )
+      .setInteractive()
       .setOrigin(1, 1)
       .setScale(2.5)
       .setScrollFactor(0);
+    this.pauseButton.on("pointerdown", () => {
+      this.physics.pause();
+      this.scene.pause();
+    });
   }
 
   createColliders() {

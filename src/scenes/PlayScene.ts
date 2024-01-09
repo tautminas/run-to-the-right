@@ -1,6 +1,6 @@
 import * as Phaser from "phaser";
 
-export default class Demo extends Phaser.Scene {
+export default class PlayScene extends Phaser.Scene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private ground!: Phaser.Physics.Arcade.Image;
 
@@ -47,7 +47,7 @@ export default class Demo extends Phaser.Scene {
   private gameOver: boolean = false;
 
   constructor() {
-    super("GameScene");
+    super("PlayScene");
   }
 
   preload() {

@@ -11,7 +11,33 @@ export default class MenuScene extends Phaser.Scene {
 
   create() {
     this.add.image(400, 300, "sky");
-    // this.scene.start("PlayScene");
+
+    const playText = this.add
+      .text(400, 250, "Play", {
+        fontSize: "32px",
+        color: "#000000",
+      })
+      .setOrigin(0.5);
+    playText.setInteractive();
+    playText.on("pointerdown", () => this.scene.start("PlayScene"));
+
+    const scoreText = this.add
+      .text(400, 300, "Score", {
+        fontSize: "32px",
+        color: "#000000",
+      })
+      .setOrigin(0.5);
+    scoreText.setInteractive();
+    scoreText.on("pointerdown", () => console.log("Score"));
+
+    const exitText = this.add
+      .text(400, 350, "Exit", {
+        fontSize: "32px",
+        color: "#000000",
+      })
+      .setOrigin(0.5);
+    exitText.setInteractive();
+    exitText.on("pointerdown", () => console.log("Exit"));
   }
 
   update() {}

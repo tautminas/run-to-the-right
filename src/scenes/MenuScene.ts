@@ -17,34 +17,10 @@ export default class MenuScene extends Phaser.Scene {
   create() {
     this.add.image(400, 300, "sky");
 
-    const playText = this.add
-      .text(400, 250, "Play", {
-        fontSize: "32px",
-        color: "#000000",
-      })
-      .setOrigin(0.5);
-    playText.setInteractive();
-    playText.on("pointerdown", () => this.scene.start("PlayScene"));
+    this.createMenuItem(400, 250, "Play", () => this.scene.start("PlayScene"));
+    this.createMenuItem(400, 300, "Score", () => console.log("Score"));
+    this.createMenuItem(400, 350, "Exit", () => console.log("Exit"));
 
-    const scoreText = this.add
-      .text(400, 300, "Score", {
-        fontSize: "32px",
-        color: "#000000",
-      })
-      .setOrigin(0.5);
-    scoreText.setInteractive();
-    scoreText.on("pointerdown", () => console.log("Score"));
-
-    const exitText = this.add
-      .text(400, 350, "Exit", {
-        fontSize: "32px",
-        color: "#000000",
-      })
-      .setOrigin(0.5);
-    exitText.setInteractive();
-    exitText.on("pointerdown", () => console.log("Exit"));
-
-    this.menuItems = [playText, scoreText, exitText];
     this.selectMenuItem(this.selectedItemIndex);
   }
 
@@ -93,5 +69,28 @@ export default class MenuScene extends Phaser.Scene {
         item.setColor("#000000");
       }
     });
+  }
+
+  createMenuItem(x: number, y: number, text: string, callback: () => void) {
+    const menuItem = this.add
+      .text(x, y, text, {
+        fontSize: "32px",
+        color: "#000000",
+      })
+      .setOrigin(0.5)
+      .setInteractive();
+
+    this.menuItems.push(menuItem);
+
+    menuItem.on("pointerover", () => {
+      this.selectedItemIndex = this.menuItems.indexOf(menuItem);
+      this.selectMenuItem(this.selectedItemIndex);
+    });
+
+    menuItem.on("pointerdown", () => {
+      callback();
+    });
+
+    return menuItem;
   }
 }

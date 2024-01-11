@@ -4,6 +4,7 @@ export default class MenuScene extends Phaser.Scene {
   private selectedItemIndex: number = 0;
   private menuItems: Phaser.GameObjects.Text[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private isEnterJustPressed: boolean = false;
 
   constructor() {
     super("MenuScene");
@@ -50,6 +51,9 @@ export default class MenuScene extends Phaser.Scene {
   update() {
     if (this.input && this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
+      this.isEnterJustPressed = Phaser.Input.Keyboard.JustDown(
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+      );
     } else {
       console.error("Input or keyboard is not available");
     }
@@ -75,7 +79,7 @@ export default class MenuScene extends Phaser.Scene {
       this.selectMenuItem(this.selectedItemIndex);
     }
 
-    if (isSpaceJustPressed) {
+    if (isSpaceJustPressed || this.isEnterJustPressed) {
       const selectedItem = this.menuItems[this.selectedItemIndex];
       selectedItem.emit("pointerdown");
     }

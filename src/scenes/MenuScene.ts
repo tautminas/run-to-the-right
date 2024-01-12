@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
+import PreloadScene from "./BaseScene";
 
-export default class MenuScene extends Phaser.Scene {
+export default class MenuScene extends PreloadScene {
   private selectedItemIndex: number = 0;
   private menuItems: Phaser.GameObjects.Text[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -10,12 +11,8 @@ export default class MenuScene extends Phaser.Scene {
     super("MenuScene");
   }
 
-  preload() {
-    this.load.image("sky", "assets/sky.png");
-  }
-
   create() {
-    this.add.image(400, 300, "sky");
+    super.createBackground();
 
     this.createMenuItem(400, 250, "Play", () => this.scene.start("PlayScene"));
     this.createMenuItem(400, 300, "Score", () => console.log("Score"));

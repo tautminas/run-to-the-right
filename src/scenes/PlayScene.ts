@@ -1,6 +1,7 @@
 import * as Phaser from "phaser";
+import PreloadScene from "./BaseScene";
 
-export default class PlayScene extends Phaser.Scene {
+export default class PlayScene extends PreloadScene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private ground!: Phaser.Physics.Arcade.Image;
 
@@ -55,9 +56,10 @@ export default class PlayScene extends Phaser.Scene {
   }
 
   create() {
+    super.createBackground();
     this.createAnimations();
     this.setPhysics();
-    this.createWorld();
+    this.createGround();
     this.createPlayer();
     this.createPlatforms();
     this.createBombs();
@@ -167,8 +169,7 @@ export default class PlayScene extends Phaser.Scene {
     this.flyingEyeMonsters = this.physics.add.group();
   }
 
-  createWorld() {
-    this.add.image(400, 300, "sky").setScrollFactor(0);
+  createGround() {
     this.ground = this.physics.add
       .staticSprite(this.scale.width * 0.5, this.scale.height, "ground")
       .setOrigin(0.5, 1)

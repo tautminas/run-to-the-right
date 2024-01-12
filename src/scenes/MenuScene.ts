@@ -14,9 +14,12 @@ export default class MenuScene extends PreloadScene {
   create() {
     super.createBackground();
 
-    this.createMenuItem(400, 250, "Play", () => this.scene.start("PlayScene"));
-    this.createMenuItem(400, 300, "Score", () => console.log("Score"));
-    this.createMenuItem(400, 350, "Exit", () => console.log("Exit"));
+    this.createMenuItem(400, 275, "Play", () => this.scene.start("PlayScene"));
+    this.createMenuItem(400, 325, "Score", () => console.log("Score"));
+    this.createMenuItem(400, 375, "Controls", () => console.log("Controls"));
+    this.createMenuItem(400, 425, "Sound: ON", () => console.log("Sound: ON"));
+    this.createMenuItem(400, 475, "Credits", () => console.log("Credits"));
+    this.createMenuItem(400, 525, "Exit", () => console.log("Exit"));
 
     this.selectMenuItem(this.selectedItemIndex);
   }
@@ -61,7 +64,7 @@ export default class MenuScene extends PreloadScene {
   selectMenuItem(index: number) {
     this.menuItems.forEach((item, i) => {
       if (i === index) {
-        item.setColor("#ff0000");
+        item.setColor("#FF004D");
       } else {
         item.setColor("#000000");
       }
@@ -71,8 +74,9 @@ export default class MenuScene extends PreloadScene {
   createMenuItem(x: number, y: number, text: string, callback: () => void) {
     const menuItem = this.add
       .text(x, y, text, {
-        fontSize: "32px",
-        color: "#000000",
+        fontFamily: "'Roboto Mono', monospace",
+        fontSize: "34px",
+        color: "#000",
       })
       .setOrigin(0.5)
       .setInteractive();

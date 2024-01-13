@@ -19,10 +19,14 @@ export default class MenuScene extends BaseScene {
     super.createBackground();
     this.add.image(400, 135, "logo").setScale(0.4);
 
-    this.createMenuItem(400, 275, "Play", () => this.scene.start("PlayScene"));
-    this.createMenuItem(400, 325, "Score", () =>
-      this.scene.start("ScoreScene")
-    );
+    this.createMenuItem(400, 275, "Play", () => {
+      this.resetSceneData();
+      this.scene.start("PlayScene");
+    });
+    this.createMenuItem(400, 325, "Score", () => {
+      this.resetSceneData();
+      this.scene.start("ScoreScene");
+    });
     this.createMenuItem(400, 375, "Controls", () => console.log("Controls"));
     this.createMenuItem(400, 425, "Sound: ON", () => console.log("Sound: ON"));
     this.createMenuItem(400, 475, "Credits", () => console.log("Credits"));
@@ -66,6 +70,12 @@ export default class MenuScene extends BaseScene {
       const selectedItem = this.menuItems[this.selectedItemIndex];
       selectedItem.emit("pointerdown");
     }
+  }
+
+  resetSceneData() {
+    this.selectedItemIndex = 0;
+    this.menuItems = [];
+    this.isEnterJustPressed = false;
   }
 
   selectMenuItem(index: number) {

@@ -53,7 +53,10 @@ export default class MenuScene extends BaseScene {
       Number(this.game.config.width) / 2,
       475,
       "Credits",
-      () => console.log("Credits")
+      () => {
+        this.resetSceneData();
+        this.scene.start("CreditsScene");
+      }
     );
     this.createMenuItem(Number(this.game.config.width) / 2, 525, "Exit", () =>
       console.log("Exit")

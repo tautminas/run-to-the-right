@@ -5,9 +5,17 @@ import MenuScene from "./scenes/MenuScene";
 import PlayScene from "./scenes/PlayScene";
 import ScoreScene from "./scenes/ScoreScene";
 import ControlsScene from "./scenes/ControlsScene";
+import CreditsScene from "./scenes/CreditsScene";
 
 new Phaser.Game(
   Object.assign(config, {
-    scene: [BaseScene, MenuScene, PlayScene, ScoreScene, ControlsScene],
+    scene: [
+      BaseScene,
+      MenuScene,
+      PlayScene,
+      ScoreScene,
+      ControlsScene,
+      CreditsScene,
+    ],
   })
 );

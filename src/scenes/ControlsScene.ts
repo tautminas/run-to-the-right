@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import BaseScene from "./BaseScene";
 
-export default class ScoreScene extends BaseScene {
+export default class ControlsScene extends BaseScene {
   constructor() {
     super("ControlsScene");
   }
@@ -13,12 +13,6 @@ export default class ScoreScene extends BaseScene {
   }
 
   createControlsText() {
-    const bestScore = isNaN(
-      parseInt(localStorage.getItem("bestScore") || "", 10)
-    )
-      ? 0
-      : parseInt(localStorage.getItem("bestScore") || "", 10);
-
     this.add
       .text(
         Number(this.game.config.width) / 2,

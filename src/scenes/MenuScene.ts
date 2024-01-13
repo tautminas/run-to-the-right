@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
-import PreloadScene from "./BaseScene";
+import BaseScene from "./BaseScene";
 
-export default class MenuScene extends PreloadScene {
+export default class MenuScene extends BaseScene {
   private selectedItemIndex: number = 0;
   private menuItems: Phaser.GameObjects.Text[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
@@ -20,7 +20,9 @@ export default class MenuScene extends PreloadScene {
     this.add.image(400, 135, "logo").setScale(0.4);
 
     this.createMenuItem(400, 275, "Play", () => this.scene.start("PlayScene"));
-    this.createMenuItem(400, 325, "Score", () => console.log("Score"));
+    this.createMenuItem(400, 325, "Score", () =>
+      this.scene.start("ScoreScene")
+    );
     this.createMenuItem(400, 375, "Controls", () => console.log("Controls"));
     this.createMenuItem(400, 425, "Sound: ON", () => console.log("Sound: ON"));
     this.createMenuItem(400, 475, "Credits", () => console.log("Credits"));

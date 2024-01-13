@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
-import PreloadScene from "./BaseScene";
+import BaseScene from "./BaseScene";
 
-export default class PlayScene extends PreloadScene {
+export default class PlayScene extends BaseScene {
   private player!: Phaser.Types.Physics.Arcade.SpriteWithDynamicBody;
   private ground!: Phaser.Physics.Arcade.Image;
 

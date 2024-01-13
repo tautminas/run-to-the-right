@@ -11,8 +11,13 @@ export default class MenuScene extends PreloadScene {
     super("MenuScene");
   }
 
+  preload() {
+    this.load.image("logo", "assets/logo.png");
+  }
+
   create() {
     super.createBackground();
+    this.add.image(400, 135, "logo").setScale(0.4);
 
     this.createMenuItem(400, 275, "Play", () => this.scene.start("PlayScene"));
     this.createMenuItem(400, 325, "Score", () => console.log("Score"));

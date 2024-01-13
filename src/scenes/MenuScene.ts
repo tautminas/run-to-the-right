@@ -27,7 +27,10 @@ export default class MenuScene extends BaseScene {
       this.resetSceneData();
       this.scene.start("ScoreScene");
     });
-    this.createMenuItem(400, 375, "Controls", () => console.log("Controls"));
+    this.createMenuItem(400, 375, "Controls", () => {
+      this.resetSceneData();
+      this.scene.start("ControlsScene");
+    });
     this.createMenuItem(400, 425, "Sound: ON", () => console.log("Sound: ON"));
     this.createMenuItem(400, 475, "Credits", () => console.log("Credits"));
     this.createMenuItem(400, 525, "Exit", () => console.log("Exit"));

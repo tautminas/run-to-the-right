@@ -17,23 +17,47 @@ export default class MenuScene extends BaseScene {
 
   create() {
     super.createBackground();
-    this.add.image(400, 135, "logo").setScale(0.4);
+    this.add
+      .image(Number(this.game.config.width) / 2, 135, "logo")
+      .setScale(0.4);
 
-    this.createMenuItem(400, 275, "Play", () => {
+    this.createMenuItem(Number(this.game.config.width) / 2, 275, "Play", () => {
       this.resetSceneData();
       this.scene.start("PlayScene");
     });
-    this.createMenuItem(400, 325, "Score", () => {
-      this.resetSceneData();
-      this.scene.start("ScoreScene");
-    });
-    this.createMenuItem(400, 375, "Controls", () => {
-      this.resetSceneData();
-      this.scene.start("ControlsScene");
-    });
-    this.createMenuItem(400, 425, "Sound: ON", () => console.log("Sound: ON"));
-    this.createMenuItem(400, 475, "Credits", () => console.log("Credits"));
-    this.createMenuItem(400, 525, "Exit", () => console.log("Exit"));
+    this.createMenuItem(
+      Number(this.game.config.width) / 2,
+      325,
+      "Score",
+      () => {
+        this.resetSceneData();
+        this.scene.start("ScoreScene");
+      }
+    );
+    this.createMenuItem(
+      Number(this.game.config.width) / 2,
+      375,
+      "Controls",
+      () => {
+        this.resetSceneData();
+        this.scene.start("ControlsScene");
+      }
+    );
+    this.createMenuItem(
+      Number(this.game.config.width) / 2,
+      425,
+      "Sound: ON",
+      () => console.log("Sound: ON")
+    );
+    this.createMenuItem(
+      Number(this.game.config.width) / 2,
+      475,
+      "Credits",
+      () => console.log("Credits")
+    );
+    this.createMenuItem(Number(this.game.config.width) / 2, 525, "Exit", () =>
+      console.log("Exit")
+    );
 
     this.selectMenuItem(this.selectedItemIndex);
   }

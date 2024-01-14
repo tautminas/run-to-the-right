@@ -44,7 +44,7 @@ export default class CreditsScene extends BaseScene {
       .text(
         Number(this.game.config.width) / 2,
         Number(this.game.config.height) / 2,
-        "Music and sounds: Julijona Biveinytė",
+        "Music: Julijona Biveinytė",
         {
           fontFamily: "'Roboto Mono', monospace",
           fontSize: "24px",

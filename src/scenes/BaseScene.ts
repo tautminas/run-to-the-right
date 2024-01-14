@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 
 export default class BaseScene extends Phaser.Scene {
-  protected _isSoundOn: boolean = true;
+  protected _isSoundOn: boolean = false;
 
   constructor(key: string) {
     super(key);
@@ -10,6 +10,7 @@ export default class BaseScene extends Phaser.Scene {
   preload() {
     this.load.image("sky", "assets/sky.png");
     this.load.image("back", "assets/back.png");
+    this.load.audio("intro", "assets/intro.mp3");
   }
 
   create() {

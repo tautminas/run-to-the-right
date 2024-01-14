@@ -6,6 +6,7 @@ export default class MenuScene extends BaseScene {
   private menuItems: Phaser.GameObjects.Text[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private isEnterJustPressed: boolean = false;
+  private introMusic!: Phaser.Sound.BaseSound;
 
   constructor() {
     super("MenuScene");
@@ -13,10 +14,13 @@ export default class MenuScene extends BaseScene {
 
   preload() {
     this.load.image("logo", "assets/logo.png");
+    this.load.audio("intro", "assets/intro.mp3");
   }
 
   create() {
     super.createBackground();
+    this.introMusic = this.sound.add("intro", { loop: true });
+
     this.add
       .image(Number(this.game.config.width) / 2, 135, "logo")
       .setScale(0.4);
@@ -43,12 +47,21 @@ export default class MenuScene extends BaseScene {
         this.scene.start("ControlsScene");
       }
     );
-    this.createMenuItem(
-      Number(this.game.config.width) / 2,
-      425,
-      "Sound: ON",
-      () => this.toggleSound()
-    );
+    if (this._isSoundOn) {
+      this.createMenuItem(
+        Number(this.game.config.width) / 2,
+        425,
+        "Sound: ON",
+        () => this.toggleSound()
+      );
+    } else {
+      this.createMenuItem(
+        Number(this.game.config.width) / 2,
+        425,
+        "Sound: OFF",
+        () => this.toggleSound()
+      );
+    }
     this.createMenuItem(
       Number(this.game.config.width) / 2,
       475,
@@ -160,6 +173,20 @@ export default class MenuScene extends BaseScene {
 
     if (soundMenuItem) {
       soundMenuItem.text = this._isSoundOn ? "Sound: ON" : "Sound: OFF";
+    }
+
+    if (this._isSoundOn) {
+      // Destroy all sounds except for this.introMusic
+      if ((this.sound as any).sounds) {
+        (this.sound as any).sounds.forEach((sound: Phaser.Sound.BaseSound) => {
+          if (sound !== this.introMusic) {
+            sound.destroy();
+          }
+        });
+      }
+      this.introMusic.play();
+    } else {
+      this.game.sound.stopAll();
     }
   };
 }

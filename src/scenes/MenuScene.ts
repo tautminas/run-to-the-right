@@ -47,7 +47,7 @@ export default class MenuScene extends BaseScene {
       Number(this.game.config.width) / 2,
       425,
       "Sound: ON",
-      () => console.log("Sound: ON")
+      () => this.toggleSound()
     );
     this.createMenuItem(
       Number(this.game.config.width) / 2,
@@ -150,4 +150,16 @@ export default class MenuScene extends BaseScene {
       this.game.destroy(true);
     }
   }
+
+  toggleSound = () => {
+    this._isSoundOn = !this._isSoundOn;
+
+    const soundMenuItem = this.menuItems.find(
+      (item) => item.text === "Sound: ON" || item.text === "Sound: OFF"
+    );
+
+    if (soundMenuItem) {
+      soundMenuItem.text = this._isSoundOn ? "Sound: ON" : "Sound: OFF";
+    }
+  };
 }

@@ -1,4 +1,3 @@
-import * as Phaser from "phaser";
 import BaseScene from "./BaseScene";
 
 export default class CreditsScene extends BaseScene {
@@ -10,6 +9,10 @@ export default class CreditsScene extends BaseScene {
     super.createBackground();
     this.createCreditsTexts();
     super.createBackBtnForInfoScene();
+  }
+
+  update() {
+    super.handleBackToMenuFromInfo();
   }
 
   createCreditsTexts() {

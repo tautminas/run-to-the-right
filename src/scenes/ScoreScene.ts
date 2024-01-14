@@ -1,4 +1,3 @@
-import * as Phaser from "phaser";
 import BaseScene from "./BaseScene";
 
 export default class ScoreScene extends BaseScene {
@@ -10,6 +9,10 @@ export default class ScoreScene extends BaseScene {
     super.createBackground();
     this.createBestScoreText();
     super.createBackBtnForInfoScene();
+  }
+
+  update() {
+    super.handleBackToMenuFromInfo();
   }
 
   createBestScoreText() {

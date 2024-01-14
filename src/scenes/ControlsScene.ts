@@ -1,4 +1,3 @@
-import * as Phaser from "phaser";
 import BaseScene from "./BaseScene";
 
 export default class ControlsScene extends BaseScene {
@@ -10,6 +9,10 @@ export default class ControlsScene extends BaseScene {
     super.createBackground();
     this.createControlsText();
     super.createBackBtnForInfoScene();
+  }
+
+  update() {
+    super.handleBackToMenuFromInfo();
   }
 
   createControlsText() {

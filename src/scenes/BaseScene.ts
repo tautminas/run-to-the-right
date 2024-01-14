@@ -39,4 +39,25 @@ export default class BaseScene extends Phaser.Scene {
       this.scene.start("MenuScene");
     });
   }
+
+  handleBackToMenuFromInfo() {
+    let cursors, isSpaceJustPressed, isEnterJustPressed, isEscapeJustPressed;
+
+    if (this.input && this.input.keyboard) {
+      cursors = this.input.keyboard.createCursorKeys();
+      isSpaceJustPressed = Phaser.Input.Keyboard.JustDown(cursors.space);
+      isEnterJustPressed = Phaser.Input.Keyboard.JustDown(
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+      );
+      isEscapeJustPressed = Phaser.Input.Keyboard.JustDown(
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
+      );
+    } else {
+      console.error("Input or keyboard is not available");
+    }
+
+    if (isSpaceJustPressed || isEnterJustPressed || isEscapeJustPressed) {
+      this.scene.start("MenuScene");
+    }
+  }
 }

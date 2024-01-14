@@ -59,7 +59,7 @@ export default class MenuScene extends BaseScene {
       }
     );
     this.createMenuItem(Number(this.game.config.width) / 2, 525, "Exit", () =>
-      console.log("Exit")
+      this.handleExitButtonClick()
     );
 
     this.selectMenuItem(this.selectedItemIndex);
@@ -140,5 +140,14 @@ export default class MenuScene extends BaseScene {
     });
 
     return menuItem;
+  }
+
+  handleExitButtonClick() {
+    const isExitConfirmed = window.confirm(
+      "Are you sure you want to exit the game?"
+    );
+    if (isExitConfirmed) {
+      this.game.destroy(true);
+    }
   }
 }

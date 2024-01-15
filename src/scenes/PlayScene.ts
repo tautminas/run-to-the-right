@@ -47,6 +47,12 @@ export default class PlayScene extends BaseScene {
 
   private gameOver: boolean = false;
 
+  private initialTime: number = 3;
+
+  private timedEvent!: Phaser.Time.TimerEvent;
+  private countDownText!: Phaser.GameObjects.Text;
+  private pauseEvent!: Phaser.Events.EventEmitter;
+
   constructor() {
     super("PlayScene");
   }
@@ -70,6 +76,7 @@ export default class PlayScene extends BaseScene {
     this.setupKeyboardControls();
     this.setupPlayerActionKeyboardEvents();
     this.createColliders();
+    this.listenToResume();
   }
 
   update() {
@@ -418,6 +425,40 @@ export default class PlayScene extends BaseScene {
       }),
       frameRate: 10,
     });
+  }
+
+  listenToResume() {
+    if (this.pauseEvent) {
+      return;
+    }
+
+    this.pauseEvent = this.events.on("resume", () => {
+      console.log("test");
+      this.initialTime = 3;
+      this.countDownText = this.add
+        .text(300, 300, `Run in: ${this.initialTime}`, {
+          fontFamily: "'Roboto Mono', monospace",
+          fontSize: "50px",
+          color: "#000",
+        })
+        .setOrigin(0.5);
+      this.timedEvent = this.time.addEvent({
+        delay: 1000,
+        callback: this.countDown,
+        callbackScope: this,
+        loop: true,
+      });
+    });
+  }
+
+  countDown() {
+    this.initialTime--;
+    this.countDownText.setText("Run in: " + this.initialTime);
+    if (this.initialTime <= 0) {
+      this.countDownText.setText("");
+      this.physics.resume();
+      this.timedEvent.remove();
+    }
   }
 
   setupKeyboardControls() {

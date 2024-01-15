@@ -112,7 +112,7 @@ export default class PauseScene extends BaseScene {
 
   continueGame() {
     this.scene.stop();
-    this.scene.resume();
+    this.scene.resume("PlayScene");
   }
 
   exitGame() {

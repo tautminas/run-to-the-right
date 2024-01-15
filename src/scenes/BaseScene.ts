@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 
 export default class BaseScene extends Phaser.Scene {
-  protected _isSoundOn: boolean = false;
+  protected static _isSoundOn: boolean = false;
 
   constructor(key: string) {
     super(key);
@@ -15,14 +15,6 @@ export default class BaseScene extends Phaser.Scene {
 
   create() {
     this.scene.start("MenuScene");
-  }
-
-  get isSoundOn(): boolean {
-    return this._isSoundOn;
-  }
-
-  set isSoundOn(value: boolean) {
-    this._isSoundOn = value;
   }
 
   createBackground() {

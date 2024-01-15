@@ -47,7 +47,7 @@ export default class MenuScene extends BaseScene {
         this.scene.start("ControlsScene");
       }
     );
-    if (this._isSoundOn) {
+    if (BaseScene._isSoundOn) {
       this.createMenuItem(
         Number(this.game.config.width) / 2,
         425,
@@ -165,17 +165,17 @@ export default class MenuScene extends BaseScene {
   }
 
   toggleSound = () => {
-    this._isSoundOn = !this._isSoundOn;
+    BaseScene._isSoundOn = !BaseScene._isSoundOn;
 
     const soundMenuItem = this.menuItems.find(
       (item) => item.text === "Sound: ON" || item.text === "Sound: OFF"
     );
 
     if (soundMenuItem) {
-      soundMenuItem.text = this._isSoundOn ? "Sound: ON" : "Sound: OFF";
+      soundMenuItem.text = BaseScene._isSoundOn ? "Sound: ON" : "Sound: OFF";
     }
 
-    if (this._isSoundOn) {
+    if (BaseScene._isSoundOn) {
       // Destroy all sounds except for this.introMusic
       if ((this.sound as any).sounds) {
         (this.sound as any).sounds.forEach((sound: Phaser.Sound.BaseSound) => {

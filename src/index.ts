@@ -6,6 +6,7 @@ import PlayScene from "./scenes/PlayScene";
 import ScoreScene from "./scenes/ScoreScene";
 import ControlsScene from "./scenes/ControlsScene";
 import CreditsScene from "./scenes/CreditsScene";
+import PauseScene from "./scenes/PauseScene";
 
 new Phaser.Game(
   Object.assign(config, {
@@ -16,6 +17,7 @@ new Phaser.Game(
       ScoreScene,
       ControlsScene,
       CreditsScene,
+      PauseScene,
     ],
   })
 );

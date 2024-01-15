@@ -21,11 +21,13 @@ export default class PauseScene extends BaseScene {
       275,
       "Continue",
       () => {
-        console.log("Continue");
+        this.resetSceneData();
+        this.continueGame();
       }
     );
     this.createMenuItem(Number(this.game.config.width) / 2, 325, "Exit", () => {
-      console.log("Exit");
+      this.resetSceneData();
+      this.exitGame();
     });
 
     this.selectMenuItem(this.selectedItemIndex);
@@ -106,5 +108,15 @@ export default class PauseScene extends BaseScene {
     });
 
     return menuItem;
+  }
+
+  continueGame() {
+    this.scene.stop();
+    this.scene.resume();
+  }
+
+  exitGame() {
+    this.scene.stop("PlayScene");
+    this.scene.start("MenuScene");
   }
 }

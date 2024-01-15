@@ -264,6 +264,13 @@ export default class PlayScene extends BaseScene {
       .setOrigin(1, 1)
       .setScale(2.5)
       .setScrollFactor(0);
+    if (this.input && this.input.keyboard) {
+      this.input.keyboard.on("keydown-ESC", () => {
+        this.pauseButton.emit("pointerdown");
+      });
+    } else {
+      console.error("Input or keyboard is not available");
+    }
     this.pauseButton.on("pointerdown", () => {
       this.physics.pause();
       this.scene.pause();

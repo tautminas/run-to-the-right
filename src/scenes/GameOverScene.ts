@@ -3,6 +3,8 @@ import BaseScene from "./BaseScene";
 
 export default class GameOverScene extends BaseScene {
   private restartText!: Phaser.GameObjects.Text;
+  private isEnterJustPressed: boolean = false;
+  private isEscapeJustPressed: boolean = false;
 
   constructor() {
     super("GameOverScene");
@@ -10,6 +12,29 @@ export default class GameOverScene extends BaseScene {
 
   create() {
     this.createGameOverInfoTexts();
+  }
+
+  update() {
+    if (this.input && this.input.keyboard) {
+      this.isEnterJustPressed = Phaser.Input.Keyboard.JustDown(
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ENTER)
+      );
+      this.isEscapeJustPressed = Phaser.Input.Keyboard.JustDown(
+        this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.ESC)
+      );
+    } else {
+      console.error("Input or keyboard is not available");
+    }
+
+    if (this.isEnterJustPressed) {
+      console.log("Enter");
+      // this.scene.stop();
+      // this.scene.start("PlayScene");
+    }
+
+    if (this.isEscapeJustPressed) {
+      console.log("Esc");
+    }
   }
 
   createGameOverInfoTexts() {

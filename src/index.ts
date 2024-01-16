@@ -7,6 +7,7 @@ import ScoreScene from "./scenes/ScoreScene";
 import ControlsScene from "./scenes/ControlsScene";
 import CreditsScene from "./scenes/CreditsScene";
 import PauseScene from "./scenes/PauseScene";
+import GameOverScene from "./scenes/GameOverScene";
 
 new Phaser.Game(
   Object.assign(config, {
@@ -18,6 +19,7 @@ new Phaser.Game(
       ControlsScene,
       CreditsScene,
       PauseScene,
+      GameOverScene,
     ],
   })
 );

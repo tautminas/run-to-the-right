@@ -645,6 +645,7 @@ export default class PlayScene extends BaseScene {
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
     this.skeletonsCollider.destroy();
+    this.scene.launch("GameOverScene");
   }
 
   hitFlyingEyeMonster(
@@ -678,6 +679,7 @@ export default class PlayScene extends BaseScene {
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
     this.skeletonsCollider.destroy();
+    this.scene.launch("GameOverScene");
   }
 
   hitSkeleton(
@@ -709,6 +711,7 @@ export default class PlayScene extends BaseScene {
     this.bombsCollider.destroy();
     this.eyeMonstersCollider.destroy();
     this.skeletonsCollider.destroy();
+    this.scene.launch("GameOverScene");
   }
 
   attackFlyingEyeMonster(

@@ -61,6 +61,66 @@ export default class PlayScene extends BaseScene {
     this.preloadAssets();
   }
 
+  resetScene() {
+    // Add your clearing/resetting logic here
+    console.log("Resetting PlayScene");
+    console.log(this.anims);
+    this.anims.remove("idle");
+    this.anims.remove("death");
+    this.anims.remove("run");
+    this.anims.remove("attack");
+    this.anims.remove("jump");
+    this.anims.remove("explosion");
+    this.anims.remove("eye-monster-flight");
+    this.anims.remove("skeleton-walk");
+    this.anims.remove("skeleton-attack");
+    this.anims.remove("skeleton-death");
+    this.anims.remove("fall");
+    this.anims.remove("eye-monster-attack");
+    this.anims.remove("eye-monster-death");
+    this.player = null;
+    this.ground = null;
+    this.platforms = null;
+    this.rightMostPlatformX = 0;
+    this.scoreText = null;
+    this.score = 0;
+    this.bestScoreText = null;
+    this.bestScore = isNaN(
+      parseInt(localStorage.getItem("bestScore") || "", 10)
+    )
+      ? 0
+      : parseInt(localStorage.getItem("bestScore") || "", 10);
+    this.cursors = null;
+    this.flyingEyeMonsters = null;
+    this.numberOfFlyingEyeMonsters = 0;
+    this.flyingEyeMonsterTimer = null;
+    this.flyingEyeMonsterIntervalLowerBound = 2_000;
+    this.flyingEyeMonsterIntervalUpperBound = 8_000;
+    this.eyeMonstersCollider = null;
+    this.bombs = null;
+    this.numberOfBombs = 0;
+    this.bombTimer = null;
+    this.bombIntervalLowerBound = 2_000;
+    this.bombIntervalUpperBound = 8_000;
+    this.bombsCollider = null;
+    this.skeletons = null;
+    this.numberOfSkeletons = 0;
+    this.skeletonsIntervalLowerBound = 2_000;
+    this.skeletonsIntervalUpperBound = 8_000;
+    this.skeletonTimer = null;
+    this.skeletonsCollider = null;
+    this.isAttackPlaying = false;
+    this.attackHitbox = null;
+    this.attackCollider = null;
+    this.pauseButton = null;
+    this.gameOver = false;
+    this.initialTime = 3;
+    this.timedEvent = null;
+    this.countDownText = null;
+    this.pauseEvent = null;
+    this.scene.restart();
+  }
+
   create() {
     super.createBackground();
     this.createAnimations();

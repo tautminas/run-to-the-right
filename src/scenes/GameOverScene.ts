@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import BaseScene from "./BaseScene";
+import PlayScene from "./PlayScene";
 
 export default class GameOverScene extends BaseScene {
   private restartText!: Phaser.GameObjects.Text;
@@ -28,8 +29,14 @@ export default class GameOverScene extends BaseScene {
 
     if (this.isEnterJustPressed) {
       console.log("Enter");
-      // this.scene.stop();
-      // this.scene.start("PlayScene");
+
+      console.log(this.scene.get("PlayScene"));
+      this.scene.stop();
+      // this.scene.get("PlayScene").resetScene();
+      const playScene = this.scene.get("PlayScene") as PlayScene;
+      if (playScene) {
+        playScene.resetScene();
+      }
     }
 
     if (this.isEscapeJustPressed) {

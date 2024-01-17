@@ -23,21 +23,21 @@ export default class PlayScene extends BaseScene {
   private flyingEyeMonsterTimer!: Phaser.Time.TimerEvent;
   private flyingEyeMonsterIntervalLowerBound: number = 2_000;
   private flyingEyeMonsterIntervalUpperBound: number = 8_000;
-  private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider;
+  private eyeMonstersCollider!: Phaser.Physics.Arcade.Collider | null;
 
   private bombs!: Phaser.Physics.Arcade.Group;
   private numberOfBombs: number = 0;
   private bombTimer!: Phaser.Time.TimerEvent;
   private bombIntervalLowerBound: number = 2_000;
   private bombIntervalUpperBound: number = 8_000;
-  private bombsCollider!: Phaser.Physics.Arcade.Collider;
+  private bombsCollider!: Phaser.Physics.Arcade.Collider | null;
 
   private skeletons!: Phaser.Physics.Arcade.Group;
   private numberOfSkeletons: number = 0;
   private skeletonsIntervalLowerBound: number = 2_000;
   private skeletonsIntervalUpperBound: number = 8_000;
   private skeletonTimer!: Phaser.Time.TimerEvent;
-  private skeletonsCollider!: Phaser.Physics.Arcade.Collider;
+  private skeletonsCollider!: Phaser.Physics.Arcade.Collider | null;
 
   private isAttackPlaying: boolean = false;
   private attackHitbox: Phaser.Physics.Arcade.Sprite | null = null;
@@ -49,9 +49,9 @@ export default class PlayScene extends BaseScene {
 
   private initialTime: number = 3;
 
-  private timedEvent!: Phaser.Time.TimerEvent;
+  private timedEvent!: Phaser.Time.TimerEvent | null;
   private countDownText!: Phaser.GameObjects.Text;
-  private pauseEvent!: Phaser.Events.EventEmitter;
+  private pauseEvent!: Phaser.Events.EventEmitter | null;
 
   constructor() {
     super("PlayScene");
@@ -62,9 +62,6 @@ export default class PlayScene extends BaseScene {
   }
 
   resetScene() {
-    // Add your clearing/resetting logic here
-    console.log("Resetting PlayScene");
-    console.log(this.anims);
     this.anims.remove("idle");
     this.anims.remove("death");
     this.anims.remove("run");
@@ -103,6 +100,9 @@ export default class PlayScene extends BaseScene {
     this.ground = this.physics.add.image(0, 0, "groundKey");
     this.platforms = this.physics.add.staticGroup();
     this.scoreText.destroy();
+    if (this.countDownText) {
+      this.countDownText.destroy();
+    }
     this.bestScoreText.destroy();
     this.bombs = this.physics.add.group();
     this.skeletons = this.physics.add.group();
@@ -111,16 +111,15 @@ export default class PlayScene extends BaseScene {
     this.skeletonTimer.destroy();
     this.bombTimer.destroy();
     this.pauseButton.destroy();
-
-    this.cursors = null;
+    if (this.input && this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+    }
+    this.timedEvent = null;
+    this.pauseEvent = null;
 
     this.eyeMonstersCollider = null;
     this.skeletonsCollider = null;
     this.bombsCollider = null;
-
-    this.timedEvent = null;
-    this.countDownText = null;
-    this.pauseEvent = null;
 
     this.scene.restart();
   }
@@ -497,7 +496,6 @@ export default class PlayScene extends BaseScene {
     }
 
     this.pauseEvent = this.events.on("resume", () => {
-      console.log("test");
       this.initialTime = 3;
       this.countDownText = this.add
         .text(300, 300, `Run in: ${this.initialTime}`, {
@@ -521,7 +519,9 @@ export default class PlayScene extends BaseScene {
     if (this.initialTime <= 0) {
       this.countDownText.setText("");
       this.physics.resume();
-      this.timedEvent.remove();
+      if (this.timedEvent) {
+        this.timedEvent.remove();
+      }
     }
   }
 
@@ -706,9 +706,15 @@ export default class PlayScene extends BaseScene {
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
-    this.bombsCollider.destroy();
-    this.eyeMonstersCollider.destroy();
-    this.skeletonsCollider.destroy();
+    if (this.bombsCollider) {
+      this.bombsCollider.destroy();
+    }
+    if (this.eyeMonstersCollider) {
+      this.eyeMonstersCollider.destroy();
+    }
+    if (this.skeletonsCollider) {
+      this.skeletonsCollider.destroy();
+    }
     this.scene.launch("GameOverScene");
   }
 
@@ -740,9 +746,15 @@ export default class PlayScene extends BaseScene {
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
-    this.bombsCollider.destroy();
-    this.eyeMonstersCollider.destroy();
-    this.skeletonsCollider.destroy();
+    if (this.bombsCollider) {
+      this.bombsCollider.destroy();
+    }
+    if (this.eyeMonstersCollider) {
+      this.eyeMonstersCollider.destroy();
+    }
+    if (this.skeletonsCollider) {
+      this.skeletonsCollider.destroy();
+    }
     this.scene.launch("GameOverScene");
   }
 
@@ -772,9 +784,15 @@ export default class PlayScene extends BaseScene {
     this.stopSkeletonSpawning();
     this.stopFlyingEyeMonsterSpawning();
     this.stopBombSpawning();
-    this.bombsCollider.destroy();
-    this.eyeMonstersCollider.destroy();
-    this.skeletonsCollider.destroy();
+    if (this.bombsCollider) {
+      this.bombsCollider.destroy();
+    }
+    if (this.eyeMonstersCollider) {
+      this.eyeMonstersCollider.destroy();
+    }
+    if (this.skeletonsCollider) {
+      this.skeletonsCollider.destroy();
+    }
     this.scene.launch("GameOverScene");
   }
 

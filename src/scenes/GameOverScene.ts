@@ -28,11 +28,7 @@ export default class GameOverScene extends BaseScene {
     }
 
     if (this.isEnterJustPressed) {
-      console.log("Enter");
-
-      console.log(this.scene.get("PlayScene"));
       this.scene.stop();
-      // this.scene.get("PlayScene").resetScene();
       const playScene = this.scene.get("PlayScene") as PlayScene;
       if (playScene) {
         playScene.resetScene();

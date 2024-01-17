@@ -78,46 +78,50 @@ export default class PlayScene extends BaseScene {
     this.anims.remove("fall");
     this.anims.remove("eye-monster-attack");
     this.anims.remove("eye-monster-death");
-    this.player = null;
-    this.ground = null;
-    this.platforms = null;
     this.rightMostPlatformX = 0;
-    this.scoreText = null;
     this.score = 0;
-    this.bestScoreText = null;
     this.bestScore = isNaN(
       parseInt(localStorage.getItem("bestScore") || "", 10)
     )
       ? 0
       : parseInt(localStorage.getItem("bestScore") || "", 10);
-    this.cursors = null;
-    this.flyingEyeMonsters = null;
     this.numberOfFlyingEyeMonsters = 0;
-    this.flyingEyeMonsterTimer = null;
     this.flyingEyeMonsterIntervalLowerBound = 2_000;
     this.flyingEyeMonsterIntervalUpperBound = 8_000;
-    this.eyeMonstersCollider = null;
-    this.bombs = null;
     this.numberOfBombs = 0;
-    this.bombTimer = null;
     this.bombIntervalLowerBound = 2_000;
     this.bombIntervalUpperBound = 8_000;
-    this.bombsCollider = null;
-    this.skeletons = null;
     this.numberOfSkeletons = 0;
     this.skeletonsIntervalLowerBound = 2_000;
     this.skeletonsIntervalUpperBound = 8_000;
-    this.skeletonTimer = null;
-    this.skeletonsCollider = null;
     this.isAttackPlaying = false;
     this.attackHitbox = null;
     this.attackCollider = null;
-    this.pauseButton = null;
     this.gameOver = false;
     this.initialTime = 3;
+    this.player = this.physics.add.sprite(0, 0, "playerKey");
+    this.ground = this.physics.add.image(0, 0, "groundKey");
+    this.platforms = this.physics.add.staticGroup();
+    this.scoreText.destroy();
+    this.bestScoreText.destroy();
+    this.bombs = this.physics.add.group();
+    this.skeletons = this.physics.add.group();
+    this.flyingEyeMonsters = this.physics.add.group();
+    this.flyingEyeMonsterTimer.destroy();
+    this.skeletonTimer.destroy();
+    this.bombTimer.destroy();
+    this.pauseButton.destroy();
+
+    this.cursors = null;
+
+    this.eyeMonstersCollider = null;
+    this.skeletonsCollider = null;
+    this.bombsCollider = null;
+
     this.timedEvent = null;
     this.countDownText = null;
     this.pauseEvent = null;
+
     this.scene.restart();
   }
 

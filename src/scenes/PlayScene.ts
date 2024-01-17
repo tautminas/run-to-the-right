@@ -61,69 +61,6 @@ export default class PlayScene extends BaseScene {
     this.preloadAssets();
   }
 
-  resetScene() {
-    this.anims.remove("idle");
-    this.anims.remove("death");
-    this.anims.remove("run");
-    this.anims.remove("attack");
-    this.anims.remove("jump");
-    this.anims.remove("explosion");
-    this.anims.remove("eye-monster-flight");
-    this.anims.remove("skeleton-walk");
-    this.anims.remove("skeleton-attack");
-    this.anims.remove("skeleton-death");
-    this.anims.remove("fall");
-    this.anims.remove("eye-monster-attack");
-    this.anims.remove("eye-monster-death");
-    this.rightMostPlatformX = 0;
-    this.score = 0;
-    this.bestScore = isNaN(
-      parseInt(localStorage.getItem("bestScore") || "", 10)
-    )
-      ? 0
-      : parseInt(localStorage.getItem("bestScore") || "", 10);
-    this.numberOfFlyingEyeMonsters = 0;
-    this.flyingEyeMonsterIntervalLowerBound = 2_000;
-    this.flyingEyeMonsterIntervalUpperBound = 8_000;
-    this.numberOfBombs = 0;
-    this.bombIntervalLowerBound = 2_000;
-    this.bombIntervalUpperBound = 8_000;
-    this.numberOfSkeletons = 0;
-    this.skeletonsIntervalLowerBound = 2_000;
-    this.skeletonsIntervalUpperBound = 8_000;
-    this.isAttackPlaying = false;
-    this.attackHitbox = null;
-    this.attackCollider = null;
-    this.gameOver = false;
-    this.initialTime = 3;
-    this.player = this.physics.add.sprite(0, 0, "playerKey");
-    this.ground = this.physics.add.image(0, 0, "groundKey");
-    this.platforms = this.physics.add.staticGroup();
-    this.scoreText.destroy();
-    if (this.countDownText) {
-      this.countDownText.destroy();
-    }
-    this.bestScoreText.destroy();
-    this.bombs = this.physics.add.group();
-    this.skeletons = this.physics.add.group();
-    this.flyingEyeMonsters = this.physics.add.group();
-    this.flyingEyeMonsterTimer.destroy();
-    this.skeletonTimer.destroy();
-    this.bombTimer.destroy();
-    this.pauseButton.destroy();
-    if (this.input && this.input.keyboard) {
-      this.cursors = this.input.keyboard.createCursorKeys();
-    }
-    this.timedEvent = null;
-    this.pauseEvent = null;
-
-    this.eyeMonstersCollider = null;
-    this.skeletonsCollider = null;
-    this.bombsCollider = null;
-
-    this.scene.restart();
-  }
-
   create() {
     super.createBackground();
     this.createAnimations();
@@ -342,9 +279,11 @@ export default class PlayScene extends BaseScene {
       console.error("Input or keyboard is not available");
     }
     this.pauseButton.on("pointerdown", () => {
-      this.physics.pause();
-      this.scene.pause();
-      this.scene.launch("PauseScene");
+      if (!this.gameOver) {
+        this.physics.pause();
+        this.scene.pause();
+        this.scene.launch("PauseScene");
+      }
     });
   }
 
@@ -701,6 +640,7 @@ export default class PlayScene extends BaseScene {
     playerSprite.setVelocityY(130);
     this.physics.resume();
     this.gameOver = true;
+    this.pauseButton?.destroy();
     this.attackHitbox?.destroy();
     this.updateBestScore();
     this.stopSkeletonSpawning();
@@ -741,6 +681,7 @@ export default class PlayScene extends BaseScene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.pauseButton?.destroy();
     this.attackHitbox?.destroy();
     this.updateBestScore();
     this.stopSkeletonSpawning();
@@ -779,6 +720,7 @@ export default class PlayScene extends BaseScene {
       });
     this.physics.resume();
     this.gameOver = true;
+    this.pauseButton?.destroy();
     this.attackHitbox?.destroy();
     this.updateBestScore();
     this.stopSkeletonSpawning();
@@ -1206,5 +1148,68 @@ export default class PlayScene extends BaseScene {
       localStorage.setItem("bestScore", String(this.score));
       this.bestScoreText.setText("Best score: " + this.score);
     }
+  }
+
+  resetScene() {
+    this.anims.remove("idle");
+    this.anims.remove("death");
+    this.anims.remove("run");
+    this.anims.remove("attack");
+    this.anims.remove("jump");
+    this.anims.remove("explosion");
+    this.anims.remove("eye-monster-flight");
+    this.anims.remove("skeleton-walk");
+    this.anims.remove("skeleton-attack");
+    this.anims.remove("skeleton-death");
+    this.anims.remove("fall");
+    this.anims.remove("eye-monster-attack");
+    this.anims.remove("eye-monster-death");
+    this.rightMostPlatformX = 0;
+    this.score = 0;
+    this.bestScore = isNaN(
+      parseInt(localStorage.getItem("bestScore") || "", 10)
+    )
+      ? 0
+      : parseInt(localStorage.getItem("bestScore") || "", 10);
+    this.numberOfFlyingEyeMonsters = 0;
+    this.flyingEyeMonsterIntervalLowerBound = 2_000;
+    this.flyingEyeMonsterIntervalUpperBound = 8_000;
+    this.numberOfBombs = 0;
+    this.bombIntervalLowerBound = 2_000;
+    this.bombIntervalUpperBound = 8_000;
+    this.numberOfSkeletons = 0;
+    this.skeletonsIntervalLowerBound = 2_000;
+    this.skeletonsIntervalUpperBound = 8_000;
+    this.isAttackPlaying = false;
+    this.attackHitbox = null;
+    this.attackCollider = null;
+    this.gameOver = false;
+    this.initialTime = 3;
+    this.player = this.physics.add.sprite(0, 0, "playerKey");
+    this.ground = this.physics.add.image(0, 0, "groundKey");
+    this.platforms = this.physics.add.staticGroup();
+    this.scoreText.destroy();
+    if (this.countDownText) {
+      this.countDownText.destroy();
+    }
+    this.bestScoreText.destroy();
+    this.bombs = this.physics.add.group();
+    this.skeletons = this.physics.add.group();
+    this.flyingEyeMonsters = this.physics.add.group();
+    this.flyingEyeMonsterTimer.destroy();
+    this.skeletonTimer.destroy();
+    this.bombTimer.destroy();
+    this.pauseButton.destroy();
+    if (this.input && this.input.keyboard) {
+      this.cursors = this.input.keyboard.createCursorKeys();
+    }
+    this.timedEvent = null;
+    this.pauseEvent = null;
+
+    this.eyeMonstersCollider = null;
+    this.skeletonsCollider = null;
+    this.bombsCollider = null;
+
+    this.scene.restart();
   }
 }

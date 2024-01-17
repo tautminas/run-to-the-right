@@ -1185,8 +1185,8 @@ export default class PlayScene extends BaseScene {
     this.attackCollider = null;
     this.gameOver = false;
     this.initialTime = 3;
-    this.player = this.physics.add.sprite(0, 0, "playerKey");
-    this.ground = this.physics.add.image(0, 0, "groundKey");
+    this.player = this.physics.add.sprite(-100, -100, "playerKey");
+    this.ground = this.physics.add.image(-100, -100, "groundKey");
     this.platforms = this.physics.add.staticGroup();
     this.scoreText.destroy();
     if (this.countDownText) {

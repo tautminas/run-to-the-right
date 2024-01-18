@@ -36,7 +36,9 @@ export default class GameOverScene extends BaseScene {
     }
 
     if (this.isEscapeJustPressed) {
-      console.log("Esc");
+      this.resetSceneData();
+      this.scene.stop("PlayScene");
+      this.scene.start("MenuScene");
     }
   }
 
@@ -77,5 +79,11 @@ export default class GameOverScene extends BaseScene {
         color: "#000",
       })
       .setOrigin(0.5);
+  }
+
+  resetSceneData() {
+    this.restartText.destroy();
+    this.isEnterJustPressed = false;
+    this.isEscapeJustPressed = false;
   }
 }

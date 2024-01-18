@@ -282,6 +282,9 @@ export default class PlayScene extends BaseScene {
       if (!this.gameOver) {
         this.physics.pause();
         this.scene.pause();
+        this.flyingEyeMonsterTimer.paused = true;
+        this.bombTimer.paused = true;
+        this.skeletonTimer.paused = true;
         this.scene.launch("PauseScene");
       }
     });
@@ -430,18 +433,19 @@ export default class PlayScene extends BaseScene {
   }
 
   listenToResume() {
-    if (this.pauseEvent) {
-      return;
-    }
-
     this.pauseEvent = this.events.on("resume", () => {
       this.initialTime = 3;
       this.countDownText = this.add
-        .text(300, 300, `Run in: ${this.initialTime}`, {
-          fontFamily: "'Roboto Mono', monospace",
-          fontSize: "50px",
-          color: "#000",
-        })
+        .text(
+          this.cameras.main.scrollX + Number(this.game.config.width) / 2,
+          Number(this.game.config.height) / 2,
+          `Run in: ${this.initialTime}`,
+          {
+            fontFamily: "'Roboto Mono', monospace",
+            fontSize: "50px",
+            color: "#000",
+          }
+        )
         .setOrigin(0.5);
       this.timedEvent = this.time.addEvent({
         delay: 1000,
@@ -453,6 +457,7 @@ export default class PlayScene extends BaseScene {
   }
 
   countDown() {
+    console.log(this.initialTime);
     this.initialTime--;
     this.countDownText.setText("Run in: " + this.initialTime);
     if (this.initialTime <= 0) {
@@ -461,6 +466,9 @@ export default class PlayScene extends BaseScene {
       if (this.timedEvent) {
         this.timedEvent.remove();
       }
+      this.flyingEyeMonsterTimer.paused = false;
+      this.bombTimer.paused = false;
+      this.skeletonTimer.paused = false;
     }
   }
 

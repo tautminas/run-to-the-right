@@ -49,9 +49,8 @@ export default class PlayScene extends BaseScene {
 
   private initialTime: number = 3;
 
-  private timedEvent!: Phaser.Time.TimerEvent | null;
+  private pauseEvent!: Phaser.Time.TimerEvent | null;
   private countDownText!: Phaser.GameObjects.Text;
-  private pauseEvent!: Phaser.Events.EventEmitter | null;
 
   constructor() {
     super("PlayScene");
@@ -433,7 +432,12 @@ export default class PlayScene extends BaseScene {
   }
 
   listenToResume() {
-    this.pauseEvent = this.events.on("resume", () => {
+    this.events.on("resume", () => {
+      if (this.pauseEvent) {
+        this.pauseEvent.remove();
+        this.countDownText.setText("");
+      }
+
       this.initialTime = 3;
       this.countDownText = this.add
         .text(
@@ -447,7 +451,8 @@ export default class PlayScene extends BaseScene {
           }
         )
         .setOrigin(0.5);
-      this.timedEvent = this.time.addEvent({
+
+      this.pauseEvent = this.time.addEvent({
         delay: 1000,
         callback: this.countDown,
         callbackScope: this,
@@ -457,14 +462,13 @@ export default class PlayScene extends BaseScene {
   }
 
   countDown() {
-    console.log(this.initialTime);
     this.initialTime--;
     this.countDownText.setText("Run in: " + this.initialTime);
     if (this.initialTime <= 0) {
       this.countDownText.setText("");
       this.physics.resume();
-      if (this.timedEvent) {
-        this.timedEvent.remove();
+      if (this.pauseEvent) {
+        this.pauseEvent.remove();
       }
       this.flyingEyeMonsterTimer.paused = false;
       this.bombTimer.paused = false;
@@ -1212,7 +1216,6 @@ export default class PlayScene extends BaseScene {
       if (this.input && this.input.keyboard) {
         this.cursors = this.input.keyboard.createCursorKeys();
       }
-      this.timedEvent = null;
       this.pauseEvent = null;
 
       this.eyeMonstersCollider = null;

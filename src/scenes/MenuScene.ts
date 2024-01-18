@@ -1,5 +1,6 @@
 import * as Phaser from "phaser";
 import BaseScene from "./BaseScene";
+import PlayScene from "./PlayScene";
 
 export default class MenuScene extends BaseScene {
   private selectedItemIndex: number = 0;
@@ -7,6 +8,7 @@ export default class MenuScene extends BaseScene {
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private isEnterJustPressed: boolean = false;
   private introMusic!: Phaser.Sound.BaseSound;
+  private isFirstGame: boolean = true;
 
   constructor() {
     super("MenuScene");
@@ -27,7 +29,16 @@ export default class MenuScene extends BaseScene {
 
     this.createMenuItem(Number(this.game.config.width) / 2, 275, "Play", () => {
       this.resetSceneData();
-      this.scene.start("PlayScene");
+      if (this.isFirstGame) {
+        this.isFirstGame = false;
+        this.scene.start("PlayScene");
+      } else {
+        this.scene.stop();
+        const playScene = this.scene.get("PlayScene") as PlayScene;
+        if (playScene) {
+          playScene.resetScene(false);
+        }
+      }
     });
     this.createMenuItem(
       Number(this.game.config.width) / 2,

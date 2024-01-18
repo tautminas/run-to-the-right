@@ -31,7 +31,7 @@ export default class GameOverScene extends BaseScene {
       this.scene.stop();
       const playScene = this.scene.get("PlayScene") as PlayScene;
       if (playScene) {
-        playScene.resetScene();
+        playScene.resetScene(true);
       }
     }
 

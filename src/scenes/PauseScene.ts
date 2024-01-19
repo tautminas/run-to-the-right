@@ -6,12 +6,16 @@ export default class PauseScene extends BaseScene {
   private menuItems: Phaser.GameObjects.Text[] = [];
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private isEnterJustPressed: boolean = false;
+  private introMusic!: Phaser.Sound.BaseSound;
 
   constructor() {
     super("PauseScene");
   }
 
-  preload() {}
+  preload() {
+    this.load.audio("intro", "assets/intro.mp3");
+    this.introMusic = this.sound.add("intro", { loop: true });
+  }
 
   create() {
     super.createBackground();
@@ -26,6 +30,18 @@ export default class PauseScene extends BaseScene {
       }
     );
     this.createMenuItem(Number(this.game.config.width) / 2, 325, "Exit", () => {
+      if (BaseScene._isSoundOn) {
+        if ((this.sound as any).sounds) {
+          (this.sound as any).sounds.forEach(
+            (sound: Phaser.Sound.BaseSound) => {
+              if (sound !== this.introMusic) {
+                sound.destroy();
+              }
+            }
+          );
+        }
+        this.introMusic.play();
+      }
       this.resetSceneData();
       this.exitGame();
     });

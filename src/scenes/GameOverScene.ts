@@ -6,13 +6,19 @@ export default class GameOverScene extends BaseScene {
   private restartText!: Phaser.GameObjects.Text;
   private isEnterJustPressed: boolean = false;
   private isEscapeJustPressed: boolean = false;
+  private introMusic!: Phaser.Sound.BaseSound;
 
   constructor() {
     super("GameOverScene");
   }
 
+  preload() {
+    this.load.audio("intro", "assets/intro.mp3");
+  }
+
   create() {
     this.createGameOverInfoTexts();
+    this.introMusic = this.sound.add("intro", { loop: true });
   }
 
   update() {
@@ -36,6 +42,18 @@ export default class GameOverScene extends BaseScene {
     }
 
     if (this.isEscapeJustPressed) {
+      if (BaseScene._isSoundOn) {
+        if ((this.sound as any).sounds) {
+          (this.sound as any).sounds.forEach(
+            (sound: Phaser.Sound.BaseSound) => {
+              if (sound !== this.introMusic) {
+                sound.destroy();
+              }
+            }
+          );
+        }
+        this.introMusic.play();
+      }
       this.resetSceneData();
       this.scene.stop("PlayScene");
       this.scene.start("MenuScene");

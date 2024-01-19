@@ -15,18 +15,32 @@ export default class MenuScene extends BaseScene {
   }
 
   preload() {
-    this.load.image("logo", "assets/logo.png");
-    this.load.audio("intro", "assets/intro.mp3");
+    this.preloadAssets();
   }
 
   create() {
     super.createBackground();
-    this.introMusic = this.sound.add("intro", { loop: true });
+    this.createLogoAndSound();
+    this.createMenuItems();
+  }
 
+  update() {
+    this.setupKeyboardControls();
+  }
+
+  preloadAssets() {
+    this.load.image("logo", "assets/logo.png");
+    this.load.audio("intro", "assets/intro.mp3");
+  }
+
+  createLogoAndSound() {
     this.add
       .image(Number(this.game.config.width) / 2, 135, "logo")
       .setScale(0.4);
+    this.introMusic = this.sound.add("intro", { loop: true });
+  }
 
+  createMenuItems() {
     this.createMenuItem(Number(this.game.config.width) / 2, 275, "Play", () => {
       this.resetSceneData();
       if (this.isFirstGame) {
@@ -89,7 +103,7 @@ export default class MenuScene extends BaseScene {
     this.selectMenuItem(this.selectedItemIndex);
   }
 
-  update() {
+  setupKeyboardControls() {
     if (this.input && this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.isEnterJustPressed = Phaser.Input.Keyboard.JustDown(

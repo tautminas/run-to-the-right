@@ -19,7 +19,14 @@ export default class PauseScene extends BaseScene {
 
   create() {
     super.createBackground();
+    this.createMenuItems();
+  }
 
+  update() {
+    this.setupKeyboardControls();
+  }
+
+  createMenuItems() {
     this.createMenuItem(
       Number(this.game.config.width) / 2,
       275,
@@ -49,7 +56,7 @@ export default class PauseScene extends BaseScene {
     this.selectMenuItem(this.selectedItemIndex);
   }
 
-  update() {
+  setupKeyboardControls() {
     if (this.input && this.input.keyboard) {
       this.cursors = this.input.keyboard.createCursorKeys();
       this.isEnterJustPressed = Phaser.Input.Keyboard.JustDown(

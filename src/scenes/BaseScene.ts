@@ -8,13 +8,17 @@ export default class BaseScene extends Phaser.Scene {
   }
 
   preload() {
-    this.load.image("sky", "assets/sky.png");
-    this.load.image("back", "assets/back.png");
-    this.load.audio("intro", "assets/intro.mp3");
+    this.preloadAssets();
   }
 
   create() {
     this.scene.start("MenuScene");
+  }
+
+  preloadAssets() {
+    this.load.image("sky", "assets/sky.png");
+    this.load.image("back", "assets/back.png");
+    this.load.audio("intro", "assets/intro.mp3");
   }
 
   createBackground() {

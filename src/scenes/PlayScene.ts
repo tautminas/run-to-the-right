@@ -58,7 +58,6 @@ export default class PlayScene extends BaseScene {
 
   preload() {
     this.preloadAssets();
-    this.load.audio("main", "assets/main.mp3");
   }
 
   create() {
@@ -76,18 +75,8 @@ export default class PlayScene extends BaseScene {
     this.setupKeyboardControls();
     this.setupPlayerActionKeyboardEvents();
     this.createColliders();
+    this.createSound();
     this.listenToResume();
-    this.mainMusic = this.sound.add("main", { loop: true });
-    if (BaseScene._isSoundOn) {
-      if ((this.sound as any).sounds) {
-        (this.sound as any).sounds.forEach((sound: Phaser.Sound.BaseSound) => {
-          if (sound !== this.mainMusic) {
-            sound.destroy();
-          }
-        });
-      }
-      this.mainMusic.play();
-    }
   }
 
   update() {
@@ -169,6 +158,7 @@ export default class PlayScene extends BaseScene {
       frameWidth: 150,
       frameHeight: 150,
     });
+    this.load.audio("main", "assets/main.mp3");
   }
 
   setPhysics() {
@@ -329,6 +319,20 @@ export default class PlayScene extends BaseScene {
       undefined,
       this
     );
+  }
+
+  createSound() {
+    this.mainMusic = this.sound.add("main", { loop: true });
+    if (BaseScene._isSoundOn) {
+      if ((this.sound as any).sounds) {
+        (this.sound as any).sounds.forEach((sound: Phaser.Sound.BaseSound) => {
+          if (sound !== this.mainMusic) {
+            sound.destroy();
+          }
+        });
+      }
+      this.mainMusic.play();
+    }
   }
 
   createAnimations() {

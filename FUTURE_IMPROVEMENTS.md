@@ -4,6 +4,7 @@ Possibilities:
 
 - Add a button to resize the screen for the optimal height and width of the game.
 - Add possibility to change controls.
+- Make the appearance of the bombs smoother. Now they can possibly appear directly from the platforms.
 
 Refactor the code 🙂:
 

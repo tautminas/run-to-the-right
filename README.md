@@ -2,6 +2,8 @@
 
 ## About the game
 
+You can access the game via this link: https://tautminas.github.io/run-to-the-right/
+
 Run to the right is a web-based game in which you have to run as far as possible while skillfully evading bombs and engaging airborne eye monsters alongside skeletal allies. Developed with [Phaser 3](https://github.com/photonstorm/phaser) and coded in Typescript. This game was initiated using [Phaser 3 TypeScript Starter](https://github.com/geocine/phaser3-rollup-typescript) for a robust foundation.
 
 ## Controls

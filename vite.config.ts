@@ -15,7 +15,7 @@ export default defineConfig({
           "typeof FEATURE_SOUND": "'true'",
         }),
       ],
-      base: "/run-to-the-right/",
     },
   },
+  base: "/run-to-the-right/",
 });

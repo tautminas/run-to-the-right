@@ -17,5 +17,5 @@ export default defineConfig({
       ],
     },
   },
-  base: "/run-to-the-right/",
+  base: "/",
 });

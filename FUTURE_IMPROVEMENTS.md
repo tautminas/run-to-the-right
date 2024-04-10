@@ -14,4 +14,3 @@ Refactor the code 🙂:
 - Move repeating code to different methods (adjustment of parameters in updateDifficulty, hitBomb and hitFlyingEyeMonster with hitSkeleton has repeated code, playing sound functionality is repeated in all of the scenes).
 - Remove unused parameters in functions (attackFlyingEyeMonster and attackSkeleton).
 - Fix console warn "Missing animation: fall" which is received after the game restart with Enter when player dies.
-- Add missing favicon in the GitHub pages site (https://tautminas.github.io/run-to-the-right/). It is being shown in the build.
